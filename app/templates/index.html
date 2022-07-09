@@ -1,0 +1,58 @@
+<!doctype html>
+<head>
+    <title>Online proxy PAC file tester</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- https://codemirror.net/5/
+        https://cdnjs.com/libraries/codemirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/codemirror.min.js" integrity="sha512-n7rucz/qOiYAkYK1CVKuqygMAnohil8Rg6kKAv0IsF2xnHUhnVyD5K9GO25OUvc+WEVZVu+NIYLblIUpkBMNvQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/mode/javascript/javascript.min.js" integrity="sha512-I6CdJdruzGtvDyvdO4YsiAq+pkWf2efgd1ZUSK2FnM/u2VuRASPC7GowWQrWyjxCZn6CT89s3ddGI+be0Ak9Fg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<html>
+    <body>
+    <main>
+        <div class="main">
+        <form method="post">
+            <H1>Online proxy PAC file tester</H1>
+            <div class="bold">Pac File</div>
+            <div class="script">
+                <textarea id="pac_script" name="pac_script">{% if pac_script %}{{pac_script}}{% endif %}</textarea>
+            </div>
+            <div class="flex">
+                <div class="col">
+                    <div class="bold">URL</div>
+                    <input class="wide" id="url" name="url" type="text" value="{% if url %}{{url}}{% endif %}">
+                </div>
+                <div class="col">
+                    <div class="bold">Your IP Address</div>
+                    <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
+                </div>
+            </div>
+            <div class="p">
+                <button class="button" id="find_proxy" type="submit">Find proxy</button>
+            </div>
+            <div class="p result {% if err %}err{% endif %}">
+                {% if proxy %}<pre>{{proxy}}</pre>{% endif %}
+            </div>
+        </form>
+        <div class="bottom">
+            <div>For help on PAC files see: <a href="https://findproxyforurl.com/">https://findproxyforurl.com/</a></div>
+            <div>Powered by <a href="https://github.com/manugarg/pacparser">pacparser</a></div>
+        </div>
+        </div>
+        <script>
+        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
+            lineNumbers: true,
+            tabindex: 0,
+            indentUnit: 4,
+            spellcheck: false,
+            autocorrect: false,
+            autocapitalize: false,
+            mode: "javascript"
+         });
+        </script>
+    </main>
+    </body>
+</html>
