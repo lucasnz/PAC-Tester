@@ -8,8 +8,8 @@ services:
       TZ: Pacific/Auckland
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-S", "--spider", "http://127.0.0.1:5000/", "-O/dev/null"]
+      test: ["CMD", python", "web-test.py", "--url", "http://localhost:5000/", "--method", "HEAD"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 5s

@@ -27,12 +27,6 @@ services:
     ports:
       - 5000:5000
     restart: always
-    healthcheck:
-      test: ["CMD", "wget", "-S", "--spider", "http://127.0.0.1:5000/", "-O/dev/null"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 ```
 
 ## License

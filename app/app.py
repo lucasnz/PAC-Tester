@@ -7,9 +7,11 @@ app.jinja_env.trim_blocks = True
 
 import py, sys
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST', 'HEAD'])
 def index():
     print('Method: %s, Path: %s' % (request.method, request.path))
+    if request.method == 'HEAD':
+        return ''
     src_ip = None
     pac_script = """function FindProxyForURL(url, host)
 {
