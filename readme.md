@@ -1,4 +1,4 @@
-# What is my ip
+# PAC Parser Web
 Docker container running a flask web server that does proxy pac file validation.
 
 ## Parameters

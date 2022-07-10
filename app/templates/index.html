@@ -12,8 +12,7 @@
 </head>
 <html>
     <body>
-    <main>
-        <div class="main">
+    <div class="main">
         <form method="post">
             <H1>Online proxy PAC file tester</H1>
             <div class="bold">Pac File</div>
@@ -37,22 +36,23 @@
                 {% if proxy %}<pre>{{proxy}}</pre>{% endif %}
             </div>
         </form>
-        <div class="bottom">
-            <div>For help on PAC files see: <a href="https://findproxyforurl.com/">https://findproxyforurl.com/</a></div>
-            <div>Powered by <a href="https://github.com/manugarg/pacparser">pacparser</a></div>
+    </div>
+    <div class="bottom">
+        <div class="float_bottom">
+            <div class="p">For help on PAC files see: <a href="https://findproxyforurl.com/">https://findproxyforurl.com/</a></div>
+            <div class="p">Powered by <a href="https://github.com/manugarg/pacparser">pacparser</a></div>
         </div>
-        </div>
-        <script>
-        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
-            lineNumbers: true,
-            tabindex: 0,
-            indentUnit: 4,
-            spellcheck: false,
-            autocorrect: false,
-            autocapitalize: false,
-            mode: "javascript"
-         });
-        </script>
-    </main>
+    </div>
+    <script>
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
+        lineNumbers: true,
+        tabindex: 0,
+        indentUnit: 4,
+        spellcheck: false,
+        autocorrect: false,
+        autocapitalize: false,
+        mode: "javascript"
+     });
+    </script>
     </body>
 </html>
