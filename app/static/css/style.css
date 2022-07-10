@@ -57,3 +57,6 @@ div.result{
 div.err{
     background-color: lightpink;
 }
+pre{
+    overflow: auto;
+}
