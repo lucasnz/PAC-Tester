@@ -33,6 +33,6 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.repository }}:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.repository }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.repository }}:buildcache,mode=max
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pacparserweb:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/pacparserweb:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/pacparserweb:buildcache,mode=max
