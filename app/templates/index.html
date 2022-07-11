@@ -31,18 +31,24 @@
             </div>
             <div class="p">
                 <button class="button" id="find_proxy" type="submit">Find proxy</button>
+                <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy</button>
             </div>
-            <div class="p result {% if err %}err{% endif %}">
+            <div id="result" class="p result {% if err %}err{% endif %}">
                 {% if proxy %}<pre>{{proxy}}</pre>{% endif %}
             </div>
         </form>
     </div>
+    <div id="output"></div>
     <div class="bottom">
         <div class="float_bottom">
             <div class="p">For help on PAC files see: <a href="https://findproxyforurl.com/">https://findproxyforurl.com/</a></div>
             <div class="p">Powered by <a href="https://github.com/manugarg/pacparser">pacparser</a></div>
         </div>
     </div>
+    <!-- Mozilla Firefox pac processing source:
+        https://searchfox.org/mozilla-central/source/netwerk/base/ascii_pac_utils.js -->
+    <script src="static/js/ascii_pac_utils.js"></script>
+    <script src="static/js/evalPac.js"></script>
     <script>
     var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
         lineNumbers: true,
@@ -54,5 +60,6 @@
         mode: "javascript"
      });
     </script>
+    <div id="pac_file" class="script"></div>
     </body>
 </html>

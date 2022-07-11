@@ -5,13 +5,11 @@ app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
 app.jinja_env.trim_blocks = True
 
-import py, sys
+import py
 
-@app.route('/', methods=['GET', 'POST', 'HEAD'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     print('Method: %s, Path: %s' % (request.method, request.path))
-    if request.method == 'HEAD':
-        return ''
     src_ip = None
     pac_script = """function FindProxyForURL(url, host)
 {
@@ -24,7 +22,7 @@ def index():
     if (shExpMatch(url, "ftp:*"))
         return "PROXY ftp.proxy.com:3128";
 
-    return "PROXY webcache.domain.com:3128";
+    return "PROXY webcache.domain.com:8080";
 }
 """
     url = "https://www.example.com"
@@ -70,4 +68,5 @@ def favicon():
 
 @app.route('/', methods=['HEAD'])
 def head():
-       return True
+        print('Method: %s, Path: %s' % (request.method, request.path))
+        return True
