@@ -1,5 +1,5 @@
 body{
-    margin: 0;
+    margin: 0px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -57,6 +57,8 @@ div.result{
 div.err{
     background-color: lightpink;
 }
-pre{
+div.pre{
+    white-space: pre;
     overflow: auto;
+
 }

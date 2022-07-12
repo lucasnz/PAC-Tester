@@ -33,9 +33,7 @@
                 <button class="button" id="find_proxy" type="submit">Find proxy</button>
                 <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy</button>
             </div>
-            <div id="result" class="p result {% if err %}err{% endif %}">
-                {% if proxy %}<pre>{{proxy}}</pre>{% endif %}
-            </div>
+            <div id="result" class="p pre result {% if err %}err{% endif %}">{% if proxy %}{{proxy}}{% endif %}</div>
         </form>
     </div>
     <div id="output"></div>
