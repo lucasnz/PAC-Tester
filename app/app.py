@@ -14,7 +14,7 @@ def index():
     pac_script = """function FindProxyForURL(url, host)
 {
     if (isPlainHostName(host) ||
-        dnsDomainIs(host, "example.com") ||
+        dnsDomainIs(host, ".example.com") || host == "example.com" ||
         isInNet(dnsResolve(host), "10.0.0.0", "255.0.0.0") || 
         isInNet(myIpAddress(), "192.168.0.0", "255.255.0.0"))
         	return "DIRECT";

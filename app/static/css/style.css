@@ -30,12 +30,13 @@ div.p{
     font-weight: bold;
 }
 .col{
+    margin-top: auto;
     flex: 1;
 }
 .flex{
     display: flex;
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 600px) {
     .flex {
         display: block;
     }
