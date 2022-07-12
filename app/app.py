@@ -28,6 +28,8 @@ def index():
     url = "https://www.example.com"
     proxy = None
     err = None
+    parserList = [('firefox', 'Firefox JS'), ('pacparser', 'Pacparser')]
+    parserSelected = 'firefox'
 
     if request.method == 'GET':
         src_ip = request.remote_addr
@@ -40,6 +42,7 @@ def index():
         src_ip = request.form['src_ip']
         pac_script = request.form['pac_script']
         url = request.form['url']
+        parserSelected = request.form['parser']
         pacparser.init()
         # we need to capture the output from pacparser is these is an error
         capture = py.io.StdCaptureFD(out=False, in_=False)
@@ -59,7 +62,7 @@ def index():
                 proxy = err
         pacparser.cleanup()
 
-    return render_template('index.html', src_ip = src_ip, pac_script = pac_script, url = url, proxy = proxy, err = err)
+    return render_template('index.html', src_ip = src_ip, pac_script = pac_script, url = url, parserList = parserList, parserSelected = parserSelected, proxy = proxy, err = err)
 
 @app.route('/favicon.ico', methods=['GET'])
 def favicon():

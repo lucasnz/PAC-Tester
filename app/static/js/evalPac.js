@@ -3,6 +3,12 @@
  */
 var outCodeMirror;
 async function evalPac() {
+    parser = document.getElementById("parser").value;
+    if (parser == 'pacparser') {
+        //submit and return
+        document.getElementById('mainForm').submit();
+        return false;
+    }
     // clear output
     result = '';
     err = false;
@@ -84,6 +90,7 @@ function updateResult(text, err) {
     }
 }
 function appendLine(line, err) {
+    console.trace();
     lineCount = outCodeMirror.lineCount();
     var pos = { // create a new object to avoid mutation of the original selection
         line: lineCount,
@@ -102,9 +109,11 @@ function myIpAddress(){
     return ret;
 }
 function dnsResolve(host) {
+    if (host == null)
+        return null;
     console.log('dnsResolve("' + host + '")');
     // if we have an specificed IP, skip the next bit and return it.
-    ip = document.getElementById("dst_ip").value;
+    ip = (document.getElementById("dst_ip").value).trim();
     if (ip == '') {
         ip = null;
         var oReq = new XMLHttpRequest();
@@ -117,7 +126,12 @@ function dnsResolve(host) {
             }
         }
         oReq.open("get", 'https://8.8.8.8/resolve?name=' + host, false);
-        oReq.send();
+        try {
+            oReq.send();
+        }
+        catch(e) {
+            appendLine('Error: DNS lookup failed: ' + e.message, true);
+        }
         /*
         request = async () => {
             const response = await fetch('https://8.8.8.8/resolve?name=' + host);
@@ -133,89 +147,29 @@ function dnsResolve(host) {
     appendLine('dnsResolve("' + host + '") = "' + ip + '";');
     return ip;
 }
-var odnsDomainIs = dnsDomainIs;
-dnsDomainIs = function(str1, str2) {
-    console.log('dnsDomainIs("' + str1 + '", "' + str2 + '")');
-    ret = odnsDomainIs(str1, str2);
-    appendLine('dnsDomainIs("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-var odnsDomainLevels = dnsDomainLevels;
-isdnsDomainLevels = function(str) {
-    console.log('dnsDomainLevels("' + host + '")');
-    ret = odnsDomainLevels(str);
-    appendLine('dnsDomainLevels("' + host + '") = ' + ret + ';');
-    return ret;
-}
-var oisInNet = isInNet;
-isInNet = function(str1, str2, str3) {
-    console.log('isInNet("' + str1 + '", "' + str2 + '", "' + str3 + '")');
-    ret = oisInNet(str1, str2, str3);
-    appendLine('isInNet("' + str1 + '", "' + str2 + '", "' + str3 + '") = ' + ret + ';');
-    return ret;
-}
-var oisPlainHostName = isPlainHostName;
-isPlainHostName = function(str) {
-    console.log('isPlainHostName("' + host + '")');
-    ret = oisPlainHostName(str);
-    appendLine('isPlainHostName("' + host + '") = ' + ret + ';');
-    return ret;
-}
-var oisResolvable = isResolvable;
-isResolvable = function(str) {
-    console.log('isResolvable("' + host + '")');
-    ret = oisResolvable(str);
-    appendLine('isResolvable("' + host + '") = ' + ret + ';');
-    return ret;
-}
-var olocalHostOrDomainIs = localHostOrDomainIs;
-localHostOrDomainIs = function(str1, str2) {
-    console.log('localHostOrDomainIs("' + str1 + '", "' + str2 + '")');
-    ret = olocalHostOrDomainIs(str1, str2);
-    appendLine('localHostOrDomainIs("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-//var shExpMatch = overrideFunction(shExpMatch);
-var oshExpMatch = shExpMatch;
-shExpMatch = function(str1, str2) {
-    console.log('shExpMatch("' + str1 + '", "' + str2 + '")');
-    ret = oshExpMatch(str1, str2);
-    appendLine('shExpMatch("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-var oweekdayRange = weekdayRange;
-weekdayRange = function(str1, str2) {
-    console.log('weekdayRange("' + str1 + '", "' + str2 + '")');
-    ret = oweekdayRange(str1, str2);
-    appendLine('weekdayRange("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-var odateRange = dateRange;
-dateRange = function(str1, str2) {
-    console.log('dateRange("' + str1 + '", "' + str2 + '")');
-    ret = odateRange(str1, str2);
-    appendLine('dateRange("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-var otimeRange = timeRange;
-timeRange = function(str1, str2) {
-    console.log('timeRange("' + str1 + '", "' + str2 + '")');
-    ret = otimeRange(str1, str2);
-    appendLine('timeRange("' + str1 + '", "' + str2 + '") = ' + ret + ';');
-    return ret;
-}
-function overrideFunction(orginalFunction) {
-    newFunction = function(arguments) {
-        logStr = 'functionName('
-        for(i = 0; i < arguments.length ;i++) {
+var dnsDomainIs = functionLogging(dnsDomainIs);
+var dnsDomainLevels = functionLogging(dnsDomainLevels);
+var isInNet = functionLogging(isInNet);
+var isPlainHostName = functionLogging(isPlainHostName);
+var isResolvable = functionLogging(isResolvable);
+var localHostOrDomainIs = functionLogging(localHostOrDomainIs);
+var shExpMatch = functionLogging(shExpMatch);
+var weekdayRange = functionLogging(weekdayRange);
+var dateRange = functionLogging(dateRange);
+var timeRange = functionLogging(timeRange);
+
+function functionLogging(orginalFunction) {
+    newFunction = function(...args) {
+        logStr = orginalFunction.name + '('
+        for(i = 0; i < args.length ;i++) {
             // if not the last item
-            if (i < arguments.length-1)
-                logStr = logStr + '"' + arguments[i] + '"';
+            if (i < args.length-1)
+                logStr = logStr + '"' + args[i] + '", ';
             else
-                logStr = logStr + '"' + arguments[i] + '")';
+                logStr = logStr + '"' + args[i] + '")';
         };
         console.log(logStr);
-        ret = orginalFunction(arguments);
+        ret = orginalFunction(...args);
         appendLine(logStr + ' = ' + ret + ';');
         return ret;
     };

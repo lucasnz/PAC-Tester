@@ -18,7 +18,7 @@
 <html>
     <body>
     <div class="main">
-        <form method="post">
+        <form id="mainForm" method="post">
             <H1>Online proxy PAC file tester</H1>
             <div class="bold">Pac File</div>
             <div class="script">
@@ -39,8 +39,12 @@
                 </div>
             </div>
             <div class="p">
-                <button class="button" id="find_proxy" type="submit">Find proxy</button>
-                <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy</button>
+                <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy PAC</button>
+                <select name="parser" id="parser" style="margin-left: 5px;">
+                    {% for pvalue, pname in parserList %}
+                    <option value="{{pvalue}}"{% if pvalue == parserSelected %} selected{% endif %}>{{pname}}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div id="result" class="p pre result {% if err %}err{% endif %}">{% if proxy %}{{proxy}}{% endif %}</div>
         </form>
