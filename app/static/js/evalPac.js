@@ -163,6 +163,9 @@ var shExpMatch = functionLogging(shExpMatch);
 var weekdayRange = functionLogging(weekdayRange);
 var dateRange = functionLogging(dateRange);
 var timeRange = functionLogging(timeRange);
+var alert = function(str) {
+    appendLine('alert("' + str +'");');
+}
 
 function functionLogging(orginalFunction) {
     newFunction = function(...args) {
