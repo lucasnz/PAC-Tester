@@ -74,6 +74,12 @@ async function evalPac() {
     updateResult(proxyStr, err);
     return false;
 }
+function updateParserDiv(){
+    if (document.getElementById("parser").value == 'pacparser')
+        document.getElementById("dns_div").style.display = 'none';
+    else
+        document.getElementById("dns_div").style.display = 'block';
+}
 function getHost(url) {
     host = null;
     _URL_REGEX = new RegExp('^[^:]*:\/\/([^\/:]+)')

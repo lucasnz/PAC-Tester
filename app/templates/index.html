@@ -33,14 +33,14 @@
                     <div class="bold">Your IP Address</div>
                     <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
                 </div>
-                <div class="col">
+                <div id="dns_div" class="col"{% if parserSelected == 'pacparser'%}style="display: none;"{% endif %}>
                     <div class="bold">Override dnsResolve (Optional)</div>
                     <input class="wide" id="dst_ip" name="dst_ip" type="text" value="">
                 </div>
             </div>
             <div class="p">
                 <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy PAC</button>
-                <select name="parser" id="parser" style="margin-left: 5px;">
+                <select name="parser" id="parser" style="margin-left: 5px;" onchange="updateParserDiv()">
                     {% for pvalue, pname in parserList %}
                     <option value="{{pvalue}}"{% if pvalue == parserSelected %} selected{% endif %}>{{pname}}</option>
                     {% endfor %}
