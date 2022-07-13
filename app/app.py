@@ -4,7 +4,7 @@ import pacparser
 app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
 app.jinja_env.trim_blocks = True
-
+import re
 import py
 
 @app.route('/', methods=['GET', 'POST'])
@@ -35,7 +35,17 @@ def index():
         src_ip = request.remote_addr
         for name, value in request.headers:
             if name.lower() == 'x-forwarded-for':
-                src_ip = value
+                # examples:
+                #   '163.116.194.20'
+                #   '163.116.194.20, 172.68.146.77:39550'
+                #   '163.116.194.20:27482'
+                #   '2104:440c:13a3:3100::10, 172.68.146.77:39550'
+                value = value.lstrip()
+                matches = re.search('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', value)
+                if matches:
+                    src_ip = matches.group(0)
+                else:
+                    src_ip = value.split(',')[0]
 
     if request.method == 'POST':
         print('POST index')
