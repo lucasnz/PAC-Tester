@@ -1,6 +1,12 @@
 <!doctype html>
 <head>
-    <title>Online proxy PAC file tester</title>
+    <title>PAC Tester - WPAD / Proxy Auto-Config (PAC) File Tester</title>
+    <meta name="title" content="PAC Tester - Proxy PAC / WPAD File Tester">
+    <meta name="description" content="PAC Tester enables you to validate Proxy Auto-Config (PAC) and Web Proxy Auto-Discovery (WPAD) scripts. It outputs the resulting proxy based on the specified: URL, Web Server IP, or Source IP.">
+    <meta name="keywords" content="PAC Tester, Proxy PAC, Proxy auto-config, Web Proxy Auto-Discovery, WPAD, PAC Parser, PAC Validator">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- https://codemirror.net/5/
@@ -18,42 +24,35 @@
 <html>
     <body>
     <div class="main">
-        <form id="mainForm" method="post">
-            <H1>Online proxy PAC file tester</H1>
-            <div class="bold">Pac File</div>
-            <div class="script">
-                <textarea id="pac_script" name="pac_script">{% if pac_script %}{{pac_script}}{% endif %}</textarea>
+        <H1>Online Proxy PAC or WPAD File Tester</H1>
+        <H2>PAC File</H2>
+        <div class="script">
+            <textarea id="pac_script" name="pac_script">{% if pac_script %}{{pac_script}}{% endif %}</textarea>
+        </div>
+        <div class="flex">
+            <div class="col">
+                <H2>URL</H2>
+                <input class="wide" id="url" name="url" type="text" value="{% if url %}{{url}}{% endif %}">
             </div>
-            <div class="flex">
-                <div class="col">
-                    <div class="bold">URL</div>
-                    <input class="wide" id="url" name="url" type="text" value="{% if url %}{{url}}{% endif %}">
-                </div>
-                <div class="col">
-                    <div class="bold">Your IP Address</div>
-                    <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
-                </div>
-                <div id="dns_div" class="col"{% if parserSelected == 'pacparser'%}style="display: none;"{% endif %}>
-                    <div class="bold">Override dnsResolve (Optional)</div>
-                    <input class="wide" id="dst_ip" name="dst_ip" type="text" value="">
-                </div>
+            <div class="col">
+                <H2>Source IP Address</H2>
+                <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
             </div>
-            <div class="p">
-                <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy PAC</button>
-                <select name="parser" id="parser" style="margin-left: 5px;" onchange="updateParserDiv()">
-                    {% for pvalue, pname in parserList %}
-                    <option value="{{pvalue}}"{% if pvalue == parserSelected %} selected{% endif %}>{{pname}}</option>
-                    {% endfor %}
-                </select>
+            <div id="dns_div" class="col">
+                <H2>Override dnsResolve (Optional)</H2>
+                <input class="wide" id="dst_ip" name="dst_ip" type="text" value="">
             </div>
-            <div id="result" class="p pre result {% if err %}err{% endif %}">{% if proxy %}{{proxy}}{% endif %}</div>
-        </form>
+        </div>
+        <div class="p">
+            <button class="button" type="button" onclick="evalPac(); return false;">Test Proxy PAC</button>
+        </div>
+        <div id="result" class="p pre result"></div>
     </div>
     <div id="output"></div>
     <div class="bottom">
         <div class="float_bottom">
             <div class="p">For help on PAC files see: <a href="https://findproxyforurl.com/">https://findproxyforurl.com/</a></div>
-            <div class="p">Powered by <a href="https://github.com/manugarg/pacparser">pacparser</a></div>
+            <div class="p">Source code in my GitHub <a href="https://github.com/lucasnz/PAC-Tester">repo</a></div>
         </div>
     </div>
     <!-- Mozilla Firefox pac processing source:
@@ -74,6 +73,6 @@
      });
      window.JSHINT = JSHINT;
     </script>
-    <div id="pac_file" class="script"></div>
+    <div id="pac_file" style="display: none;"></div>
     </body>
 </html>

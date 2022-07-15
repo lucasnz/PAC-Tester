@@ -1,9 +1,9 @@
 ---
 version: '3.6'
 services:
-  pacparserweb:
-    image: lucasnz/pacparserweb
-    container_name: pacparserweb
+  pac-tester:
+    image: lucasnz/pac-tester
+    container_name: pac-tester
     environment:
       TZ: Pacific/Auckland
     restart: always

@@ -3,19 +3,15 @@
  */
 var outCodeMirror;
 async function evalPac() {
-    parser = document.getElementById("parser").value;
-    if (parser == 'pacparser') {
-        //submit and return
-        document.getElementById('mainForm').submit();
-        return false;
-    }
     // clear output
-    result = '';
+    FindProxyForURL = undefined;
+    result = undefined;
     err = false;
     proxyStr = '';
     document.getElementById("pac_file").innerHTML = '';
     document.getElementById("result").innerHTML = '';
     document.getElementById("result").classList.remove('err');
+    // if output CodeMirror is already defined, then blank it otherwise create it...
     if (outCodeMirror) {
         outCodeMirror.setValue('');
     }
@@ -43,16 +39,19 @@ async function evalPac() {
         document.getElementById('pac_file').appendChild(script);
     }
     catch(e) {
-        result = 'Error: ' + e.message;
-        proxyStr = result;
+        proxyStr = result = 'Error: ' + e.message;
+        err = true;
+    }
+    if (typeof FindProxyForURL != 'function') {
+        proxyStr = result = "Error: FindProxyForURL is not defined or errors in it mean it can't be imported.";
         err = true;
     }
     if (!err) {
-        // define host entry
+        // define host variable
         url = document.getElementById("url").value;
         host = getHost(url);
         if (host == null) {
-            result = 'URLError: ' + url;
+            result = 'URLError: "' + url + '". URL must contain protocol prefix, e.g. https://';
             proxyStr = result;
             err = true;
         }
@@ -65,26 +64,24 @@ async function evalPac() {
             }
             catch(e) {
                 result = 'Error: ' + e.message;
+                proxyStr = result;
                 err = true;
             }
         }
     }
+    if (result == undefined)
+        err = true;
     if (result != '')
         appendLine(result, err);
     updateResult(proxyStr, err);
+    FindProxyForURL = undefined;
     return false;
-}
-function updateParserDiv(){
-    if (document.getElementById("parser").value == 'pacparser')
-        document.getElementById("dns_div").style.display = 'none';
-    else
-        document.getElementById("dns_div").style.display = 'block';
 }
 function getHost(url) {
     host = null;
     _URL_REGEX = new RegExp('^[^:]*:\/\/([^\/:]+)')
     match = _URL_REGEX.exec(url);
-    if (match != null || match.length == 2) {
+    if (match != null && match.length == 2) {
         host = match[1];
     }
     return host;
@@ -138,17 +135,8 @@ function dnsResolve(host) {
         catch(e) {
             appendLine('Error: DNS lookup failed: ' + e.message, true);
         }
-        /*
-        request = async () => {
-            const response = await fetch('https://8.8.8.8/resolve?name=' + host);
-            const json = await response.json();
-            return json;
-        }
-        const json = request();
-        console.log(json);
-        if (json.Answer)
+        if (json && json.Answer)
             ip = json.Answer[json.Answer.length-1].data;
-        */
     }
     appendLine('dnsResolve("' + host + '") = "' + ip + '";');
     return ip;

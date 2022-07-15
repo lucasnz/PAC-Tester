@@ -1,7 +1,21 @@
-# PAC Parser Web
-Docker container running a flask web server that does proxy pac file validation.
+# PAC Tester
+PAC Tester is Python flask web server for testing Proxy Auto-Config (PAC) and Web Proxy Auto-Discovery (WPAD) scripts.  It outputs the resulting proxy based on the specified: URL, Web Server IP, or Source IP. You can see it running at https://pactester.brdbnt.com/
 
-## Parameters
+### Features:
+* Proxy pac and WPAD script tester, parser and validator 
+* Editor coloring and error highlighting 
+* Leverages the proxy auto-config JavaScript in Firefox. https://hg.mozilla.org/mozilla-central/raw-file/tip/netwerk/base/ascii_pac_utils.js 
+
+### Options
+The web interface has the following options:
+| Option | Details |
+| :----: | --- |
+| URL | The full URL including protocol (e.g. https or ftp), domain, and path (port is optional). E.g. https://en.wikipedia.org/wiki/Proxy_auto-config or https://example.com:8443/ |
+| Source IP Address | MyIpAddress() will return this IP address. Change this if you want to simulate an internal user’s IP address. |
+| Override dnsResolve | (Optional) if specified, dnsResolve(host) will return this IP address. This enables you to simulate an internal webserver. |
+
+# Docker
+### Parameters
 
 Container images are configured using parameters passed at runtime.
 
@@ -10,17 +24,17 @@ Container images are configured using parameters passed at runtime.
 | `-e TZ=Europe/London` | (optional) Specify a time zone to use e.g. Europe/London. |
 | `-e FLASK_RUN_PORT=5000` | (optional) Specify the port flask listens on (default: 5000) |
 
-## docker-compose
+### docker-compose
 
-Example docker-compose file.
+Example docker-compose file:
 
 ```
 ---
 version: '2'
 services:
-  pacparserweb:
-    image: lucasnz/pacparserweb:latest
-    container_name: pacparserweb
+  pac-tester:
+    image: lucasnz/pac-tester:latest
+    container_name: pac-tester
     environment:
       TZ: Europe/London
       FLASK_RUN_PORT: 5000
@@ -29,7 +43,7 @@ services:
     restart: always
 ```
 
-## License
+# License
 
 The MIT License applies to all components.
 

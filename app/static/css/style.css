@@ -8,6 +8,12 @@ body{
     padding-left: 20px;
     padding-right: 10px;
 }
+h1{
+    font-size: 1.5em;
+}
+h2{
+    font-size: 1em;
+}
 div.main{
     height: auto;
 }
@@ -23,11 +29,6 @@ input.wide{
 div.p{
     margin-top: 12px;
     margin-bottom: 12px;
-}
-.bold{
-    margin-top: 12px;
-    margin-bottom: 12px;
-    font-weight: bold;
 }
 .col{
     margin-top: auto;
