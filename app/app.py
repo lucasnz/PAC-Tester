@@ -13,6 +13,7 @@ def index():
 {
     if (isPlainHostName(host) ||
         dnsDomainIs(host, ".example.com") || host == "example.com" ||
+        shExpMatch(host, "(*.|)google.com") ||
         isInNet(dnsResolve(host), "10.0.0.0", "255.0.0.0") || 
         isInNet(myIpAddress(), "192.168.0.0", "255.255.0.0"))
         	return "DIRECT";
@@ -23,7 +24,7 @@ def index():
     return "PROXY webcache.domain.com:8080";
 }
 """
-    url = "https://en.wikipedia.org/wiki/Proxy_auto-config"
+    url = "https://wikipedia.org/wiki/Proxy_auto-config"
 
     if request.method == 'GET':
         src_ip = request.remote_addr
@@ -42,6 +43,11 @@ def index():
                     src_ip = value.split(',')[0]
 
     return render_template('index.html', src_ip = src_ip, pac_script = pac_script, url = url)
+
+@app.route('/pacfunctions.html', methods=['GET'])
+def pacfunctions():
+    print('Method: %s, Path: %s' % (request.method, request.path))
+    return render_template('pacfunctions.html')
 
 @app.route('/favicon.ico', methods=['GET'])
 def favicon():

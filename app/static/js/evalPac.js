@@ -49,7 +49,7 @@ async function evalPac() {
     if (!err) {
         // define host variable
         url = document.getElementById("url").value;
-        host = getHost(url);
+        var {host, url} = normalizeHostUrl(url);
         if (host == null) {
             result = 'URLError: "' + url + '". URL must contain protocol prefix, e.g. https://';
             proxyStr = result;
@@ -77,14 +77,16 @@ async function evalPac() {
     FindProxyForURL = undefined;
     return false;
 }
-function getHost(url) {
+function normalizeHostUrl(url) {
+    // Browsers always have a lower case host name
     host = null;
-    _URL_REGEX = new RegExp('^[^:]*:\/\/([^\/:]+)')
+    _URL_REGEX = new RegExp('(^[^:]*:\/\/)([^\/:]+)(.*)')
     match = _URL_REGEX.exec(url);
-    if (match != null && match.length == 2) {
-        host = match[1];
+    if (match != null && match.length == 4) {
+        host = match[2].toLowerCase();
+        url = match[1] + host + match[3];
     }
-    return host;
+    return {host, url};
 }
 function updateResult(text, err) {
     document.getElementById("result").innerHTML = text;

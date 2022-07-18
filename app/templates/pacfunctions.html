@@ -1,0 +1,383 @@
+<!doctype html>
+<head>
+    <title>PAC Tester - WPAD / Proxy Auto-Config (PAC) Functions</title>
+    <meta name="title" content="PAC Tester - WPAD / Proxy Auto-Config (PAC) Functions">
+    <meta name="description" content="PAC Tester enables you to validate Proxy Auto-Config (PAC) and Web Proxy Auto-Discovery (WPAD) scripts. It outputs the resulting proxy based on the specified: URL, Web Server IP, or Source IP.">
+    <meta name="keywords" content="PAC Tester, Proxy PAC, Proxy auto-config, Web Proxy Auto-Discovery, WPAD, PAC Parser, PAC Validator">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<html>
+    <body>
+    <div class="main" style="margin-bottom: 20px;">
+        <H1>Proxy PAC or WPAD Functions</H1>
+        <H2>Overview</H2>
+        <p>A Proxy Auto-Configuration (PAC) file is a JavaScript function that determines whether web browser requests
+        (HTTP, HTTPS, and FTP) go directly to the destination or are forwarded via a proxy server.
+        The JavaScript function contained in the PAC file defines the function: FindProxyForUrl(url, host)</p>
+        <p>Support for IPv6 is implemented in Extended functions in Internet Explorer but not widely supported by browsers yet.</p>
+        <H2>Functions</H2>
+        <ul>
+            <li><a href="#FindProxyForUrl">FindProxyForUrl()</a></il>
+            <li><a href="#isPlainHostName">isPlainHostName()</a></il>
+            <li><a href="#dnsDomainIs">dnsDomainIs()</a></li>
+            <li><a href="#shExpMatch">shExpMatch()</a></li>
+            <li><a href="#isInNet">isInNet()</a></li>
+            <li><a href="#myIpAddress">myIpAddress()</a></li>
+            <li><a href="#dnsResolve">dnsResolve()</a></li>
+            <li><a href="#isResolvable">isResolvable()</a></li>
+            <li><a href="#dnsDomainLevels">dnsDomainLevels()</a></li>
+            <li><a href="#localHostOrDomainIs">localHostOrDomainIs()</a></li>
+            <li><a href="#weekdayRange">weekdayRange()</a></li>
+            <li><a href="#dateRange">dateRange()</a></li>
+            <li><a href="#timeRange">timeRange()</a></li>
+            <li><a href="#alert">alert()</a></li>
+        </ul>
+        <div id="FindProxyForUrl" class="function">
+            <div class="functionH">FindProxyForUrl(url, host)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                This function must be defined in your PAC file. It returns a string describing the proxies to be used to the browser. The format of this string is defined above. If there are multiple semicolon-separated settings,
+                the left-most setting will be used, until the browser fails to establish a connection to the proxy. In that case, the next value will be used, etc.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>url (string) - The URL being accessed. The path and query components of https:// URLs are stripped.</li>
+                    <li>host (string) - The hostname extracted from the URL. This is only for convenience; it is the same string as between :// and the first : or / after that. The port number is not included in this parameter. It can be extracted from the URL when necessary.</li>
+                </ul>
+                Note: The path and query components of https:// URLs are stripped. In Chrome (versions 52 to 73), you can disable this by setting PacHttpsUrlStrippingEnabled to false in policy or by launching with the --unsafe-pac-url command-line flag (in Chrome 74, only the flag works, and from 75 onward, there is no way to disable path-stripping; as of Chrome 81, path-stripping does not apply to HTTP URLs, but there is interest in changing this behavior to match HTTPS); in Firefox, the preference is network.proxy.autoconfig_url.include_path.
+                <div class="bold">Returns</div>
+                Returns a <i>string</i> with semicolon separated list of proxies to use.
+                The string can contain any number of the following building blocks, separated by a semicolon:
+                <ul>
+                    <li>"DIRECT" = Connections should be made directly, without any proxies.</li>
+                    <li>"PROXY host:port" = The specified proxy should be used.</li>
+                    <li>"SOCKS host:port" = The specified SOCKS server should be used.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>function FindProxyForURL(url, host)
+{
+    if (isPlainHostName(host) ||
+        dnsDomainIs(host, ".mydomain.local") ||
+        host == "mydomain.com")
+        {
+            return "DIRECT";
+        }
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</pre>
+            </div>
+        </div>
+        <div id="isPlainHostName" class="function">
+            <div class="functionH">isPlainHostName(host)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the host name does NOT contains dots (full stops).
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The domain or host name to be tested.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the domain does not contain dots.</li>
+                    <li>false if the domain contains dots.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>isPlainHostName("www.example.com"); // returns false
+isPlainHostName("intranet");        // returns true</pre>
+            </div>
+        </div>
+        <div id="dnsDomainIs" class="function">
+            <div class="functionH">dnsDomainIs(host, domain)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the host name is a child domain of the specified domain.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The hostname/domain name to be tested.</li>
+                    <li>domain (string) - The domain name to test the host name against.</li>
+                </ul>
+                <br>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the host name is a child domain of the specified domain.</li>
+                    <li>false if the host name is a not child domain of the specified domain.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>dnsDomainIs("www.example.com", ".example.com"); // returns true
+dnsDomainIs("intranet", ".example.com");        // returns false
+dnsDomainIs("blahexample.com", "example.com");  // returns true</pre>
+                Note: The domain should be specified with a leading dot, for the third example to return false.
+            </div>
+        </div>
+        <div id="shExpMatch" class="function">
+            <div class="functionH">shExpMatch(str, shexp)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the string matches the specified shell expression.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>str (string) - The string to compare (e.g. the URL, or the hostname).</li>
+                    <li>shexp (string) - A shell expression to compare against.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the pattern matches.</li>
+                    <li>false if the pattern does not match.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>shExpMatch("https://www.example.com/path1/index.html", "*/path1/*"); // returns true
+shExpMatch("https://www.example.com/index.html", "*/path/*");        // returns false
+shExpMatch("https://www.example.com/index.html", "https://*");       // returns true
+shExpMatch("https://google.com",                 "(*.|)google.com")  // returns true
+shExpMatch("https://www.google.com",             "(*.|)google.com")  // returns true</pre>
+                Note: * (match any number of characters) and ? (match one character) are supported by all browsers.
+                Braces can be used to create a group. Groups are useful if you are using the or "|" expression - see example 5.
+            </div>
+        </div>
+        <div id="isInNet" class="function">
+            <div class="functionH">isInNet(host, subnet, mask)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the host name is a child domain of the specified domain.
+                <div class="warn">Warning: DNS resolution can impact performance. If DNS resolution is needed,
+                    try and limit its use by proceeding it with dnsDomainIs() - see example 4.</div>
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The IPv4 address, domain or host name to be tested.</li>
+                    <li>subnet (string) - The IPv4 subnet to test the host against.</li>
+                    <li>mask (string) - The IPv4 subnet mask.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the domain, host name or IP address are in the subnet.</li>
+                    <li>false if the domain, host name or IP address are not in the subnet.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>isInNet("192.168.1.10", "192.168.1.0", "255.255.255.0"); // returns true
+isInNet("intranet",     "192.168.1.0", "255.255.255.0"); // returns true if dnsResolve("intranet") returns an IP address in the specified subnet.
+isInNet("8.8.8.8",      "192.168.1.0", "255.255.255.0"); // returns false
+(dnsDomainIs(host, ".mydomain.local") && isInNet(host, "192.168.10.0", "255.255.255.0");
+// only attempt the dnsResolve if host is in .mydomain.local</pre>
+                Note: If the host does not match the pattern for an IPv4 address, isInNet does a DNS lookup first.
+            </div>
+        </div>
+        <div id="myIpAddress" class="function">
+            <div class="functionH">myIpAddress()</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns a single IPv4 address of the device running the Browser, as a string in the dot-separated integer format.
+                <div class="bold">Parameters</div>
+                nil.
+                <div class="bold">Returns</div>
+                Returns a <i>string</i> with a single IPv4 address.
+                <div class="bold">Examples</div>
+<pre>myIpAddress(); // returns "192.168.1.100"</pre>
+                Note: On Linux myIpAddress() returns the same IP address as the address returned by nslookup localhost.
+            </div>
+        </div>
+        <div id="dnsResolve" class="function">
+            <div class="functionH">dnsResolve(host)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Resolves the given host name into an IP address. Returns a single IPv4 address in the dot-separated integer format as a string.
+                <div class="warn">Warning: DNS resolution can impact performance, it is best to avoid this function. If DNS resolution is needed,
+                    try and limit its use by proceeding it with dnsDomainIs() - see example 2.</div>
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The domain or host name to be queried.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Returns a <i>string</i> with a single IPv4 address.
+                <div class="bold">Examples</div>
+<pre>dnsResolve("dns.google"); // returns "8.8.8.8"
+(dnsDomainIs(host, ".mydomain.local") && dnsResolve(host) == "192.168.10.10");
+// only attempt the dnsResolve if host is in .mydomain.local</pre>
+            </div>
+        </div>
+        <div id="isResolvable" class="function">
+            <div class="functionH">isResolvable(host)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the host name resolves to an IPv4 address.
+                <div class="warn">Warning: DNS resolution can impact performance, it is best to avoid this function. If DNS resolution is needed,
+                    try and limit its use by proceeding it with dnsDomainIs() - see example 3.</div>
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The domain or host name to be queried.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the domain or host name resolves in DNS.</li>
+                    <li>false if the domain or host name do not resolve in DNS.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>isResolvable("www.google.com"); // returns true
+isResolvable("non.existent.domain"); // returns false
+(dnsDomainIs(host, ".mydomain.local") && isResolvable(host));
+// only attempt the isResolvable if host is in .mydomain.local</pre>
+            </div>
+        </div>
+        <div id="dnsDomainLevels" class="function">
+            <div class="functionH">dnsDomainLevels(host)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns the number of domain levels (number of dots) in the domain/host name.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The hostname/domain name to be tested.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Returns an <i>Integer</i> with the number of dots in the domain/host name.
+                <div class="bold">Examples</div>
+<pre>dnsDomainLevels("www");             // returns 0
+dnsDomainLevels("example.com");     // returns 1
+dnsDomainLevels("www.example.com"); // returns 2</pre>
+            </div>
+        </div>
+        <div id="localHostOrDomainIs" class="function">
+            <div class="functionH">localHostOrDomainIs(host, domain)</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if the host name matches exactly the specified domain,
+                or if there beginning of the domain matches the domain name.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>host (string) - The hostname/domain name to be tested.</li>
+                    <li>domain (string) - The domain name to test the host name against.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>true if the host name matches exactly the specified domain.</li>
+                    <li>true if there beginning of the host name matches the specified domain</li>
+                    <li>false if there are no matches.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>localHostOrDomainIs("www.example.com"   , "www.example.com"); // returns true (exact match)
+localHostOrDomainIs("www"               , "www.example.com"); // returns true (host name match)
+localHostOrDomainIs("www.google.com"    , "www.example.com"); // returns false (domain name mismatch)
+localHostOrDomainIs("mobile.example.com", "www.example.com"); // returns false (host name mismatch)
+localHostOrDomainIs("www.example"       , "www.example.com"); // returns true (host name match)</pre>
+            Note: Example 5 is likely not expected, but will return true as the logic matches the beginning of the strings.
+            </div>
+        </div>
+        <div id="weekdayRange" class="function">
+            <div class="functionH">weekdayRange(wd1, [wd2], [gmt])</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                Returns true if within the day range.
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>wd1 (string) - One of the weekday strings: "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT".</li>
+                    <li>wd2 (string) - (optional) One of the weekday strings: "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT".</li>
+                    <li>gmt (string) - (optional) Is either the string "GMT", which makes time comparison occur in GMT timezone, or is left out. If left unspecified, times are taken to be in the local timezone.</li>
+                </ul>
+                Note: If the string "GMT" is specified as a second or third parameter, times are taken to be in GMT.
+                <div class="bold">Returns</div>
+                Boolean
+                <ul>
+                    <li>If only one weekday parameter is present, the function returns a value of true on the weekday that the parameter represents.</li>
+                    <li>If both wd1 and wd2 are defined, the condition is true if the current weekday is in between those two ordered weekdays. Bounds are inclusive.</li>
+                </ul>
+                <div class="bold">Examples</div>
+<pre>weekdayRange("MON", "FRI");        // returns true Monday through Friday (local timezone)
+weekdayRange("MON", "FRI", "GMT"); // returns true Monday through Friday (GMT timezone)
+weekdayRange("SAT");               // returns true on Saturdays local time
+weekdayRange("SAT", "GMT");        // returns true on Saturdays GMT time
+weekdayRange("FRI", "MON");        // returns true Friday through Monday</pre>
+            </div>
+        </div>
+        <div id="dateRange" class="function">
+            <div class="functionH">dateRange(&lt;day&gt; | &lt;month&gt; | &lt;year&gt;, &lt;day&gt; | &lt;month&gt; | &lt;year&gt;, [gmt])</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                <p>Returns true if within the date range.</p>
+                dateRange(&lt;day1&gt;, &lt;day2&gt;, [gmt])<br>
+                dateRange(&lt;month1&gt;, &lt;month2&gt;, [gmt])<br>
+                dateRange(&lt;year1&gt;, &lt;year2&gt;, [gmt])<br>
+                dateRange(&lt;day1&gt;, &lt;month1&gt;, &lt;day2&gt;, &lt;month2&gt;, [gmt])<br>
+                dateRange(&lt;month1&gt;, &lt;year1&gt;, &lt;month2&gt;, &lt;year2&gt;, [gmt])<br>
+                dateRange(&lt;day1&gt;, &lt;month1&gt;, &lt;year1&gt;, &lt;day2&gt;, &lt;month2&gt;, &lt;year2&gt;, [gmt])<br>
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>day (integer) - The day of the month between 1 and 31.</li>
+                    <li>month (string) - One of the month strings: "JAN"|"FEB"|"MAR"|"APR"|"MAY"|"JUN"|"JUL"|"AUG"|"SEP"|"OCT"|"NOV"|"DEC".</li>
+                    <li>year (integer) - The full year number. For example, 2016 (not 16).</li>
+                    <li>gmt (string) - Either the string "GMT" for GMT timezone, or not specified, for local timezone</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean. If only a single value is specified (from each category: day, month, year), the function returns a true value only on days that match that specification.
+                If both values are specified, the result is true between those times, including bounds, but the bounds are ordered.
+                <div class="bold">Examples</div>
+<pre>dateRange(1);            // returns true on the first day of each month, local timezone
+dateRange(1, "GMT")      // returns true on the first day of each month, GMT timezone
+dateRange(1, 15);        // returns true on the first half of each month
+dateRange(24, "DEC");    // returns true on 24th of December each year
+dateRange("JAN", "MAR"); // returns true on the first quarter of the year
+
+dateRange(1, "JUN", 15, "AUG"); // returns true from June 1st until August 15th, each year
+// (including June 1st and August 15th)
+
+dateRange(1, "JUN", 1995, 15, "AUG", 1995); // returns true from June 1st, 1995, until August 15th, same year
+
+dateRange("OCT", 1995, "MAR", 1996); // returns true from October 1995 until March 1996
+// (including the entire month of October 1995 and March 1996)
+
+dateRange(1995); // returns true during the entire year of 1995
+
+dateRange(1995, 1997); // returns true from beginning of year 1995 until the end of year 1997</pre>
+            </div>
+        </div>
+        <div id="timeRange" class="function">
+            <div class="functionH">timeRange(&lt;hour1&gt;, &lt;min1&gt;, &lt;sec1&gt;, &lt;hour2&gt;, &lt;min2&gt;, &lt;sec2&gt;, [gmt])</div>
+            <div class="functionB">
+                <div class="bold">Description</div>
+                <p>Returns true if within the time range.</p>
+                <div class="bold">Parameters</div>
+                <ul>
+                    <li>hour (integer) - Hour from 0 to 23. (0 is midnight, 23 is 11 pm.)</li>
+                    <li>min (integer) - Minutes from 0 to 59.</li>
+                    <li>sec (integer) - Seconds from 0 to 59.</li>
+                    <li>gmt (string) - Either the string "GMT" for GMT timezone, or not specified, for local timezone.</li>
+                </ul>
+                <div class="bold">Returns</div>
+                Boolean. If only a single value is specified (from each category: hour, minute, second), the function returns a true value only at times that match that specification.
+                If both values are specified, the result is true between those times, including bounds, but the bounds are ordered.
+                <div class="bold">Examples</div>
+<pre>timerange(12);                // returns true from noon to 1pm
+timerange(12, 13);            // returns true from noon to 1pm
+timerange(12, "GMT");         // returns true from noon to 1pm, in GMT timezone
+timerange(9, 17);             // returns true from 9am to 5pm
+timerange(8, 30, 17, 00);     // returns true from 8:30am to 5:00pm
+timerange(0, 0, 0, 0, 0, 30); // returns true between midnight and 30 seconds past midnight</pre>
+            </div>
+        </div>
+        <div id="alert" class="function">
+            <div class="functionH">alert(message)</div>
+            <div class="functionB">
+                <div class="bold">Parameters</div>
+                message (string) - The string to log.
+                <div class="bold">Returns</div>
+                Nil
+                <div class="bold">Description</div>
+                Logs the message in the browser console.
+                <div class="bold">Examples</div>
+<pre>dnsDomainLevels("www");             // returns 0
+dnsDomainLevels("example.com");     // returns 1
+dnsDomainLevels("www.example.com"); // returns 2</pre>
+                Note: Logged messages do not work in all browsers but PAC Tester will logs these in the output windows. 
+            </div>
+        </div>
+    </div>
+    </body>
+</html>

@@ -25,7 +25,14 @@
     <body>
     <div class="main">
         <H1>Online Proxy PAC or WPAD File Tester</H1>
-        <H2>PAC File</H2>
+        <div class="flex">
+            <div class="col">
+                <H2>PAC File</H2>
+            </div>
+            <div class="col help">
+                <a href="/pacfunctions.html" target="_blank">PAC Functions Help</a>
+            </div>
+        </div>
         <div class="script">
             <textarea id="pac_script" name="pac_script">{% if pac_script %}{{pac_script}}{% endif %}</textarea>
         </div>
@@ -38,7 +45,7 @@
                 <H2>Source IP Address</H2>
                 <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
             </div>
-            <div id="dns_div" class="col">
+            <div class="col">
                 <H2>Override dnsResolve (Optional)</H2>
                 <input class="wide" id="dst_ip" name="dst_ip" type="text" value="">
             </div>
@@ -57,8 +64,8 @@
     </div>
     <!-- Mozilla Firefox pac processing source:
         https://searchfox.org/mozilla-central/source/netwerk/base/ascii_pac_utils.js -->
-    <script src="static/js/ascii_pac_utils.js"></script>
-    <script src="static/js/evalPac.js"></script>
+    <script src="{{ url_for('static', filename='js/ascii_pac_utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/evalPac.js') }}"></script>
     <script>
     var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
         lineNumbers: true,

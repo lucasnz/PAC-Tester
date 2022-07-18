@@ -22,17 +22,46 @@ div.script{
     border-width: 1px;
     border-style: solid;
 }
+div.function{
+    width: 100%;
+}
+div.functionH{
+    border-width: 1px;
+    border-style: solid;
+    padding: 10px;
+    background-color: ghostwhite;
+    font-weight: bold;
+}
+div.functionB{
+    border-width: 1px;
+    border-style: solid;
+    padding: 10px;
+    padding-top:0px;
+}
+pre{
+    overflow: auto;
+}
 input.wide{
     width: 95%;
     box-sizing: border-box;
 }
 div.p{
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+div.bold{
     margin-top: 12px;
     margin-bottom: 12px;
+    font-weight: bold;
 }
-.col{
+div.col{
     margin-top: auto;
     flex: 1;
+}
+div.help{
+    margin-bottom: auto;
+    margin-right: 20px;
+    text-align: right;
 }
 .flex{
     display: flex;
@@ -63,4 +92,9 @@ div.pre{
     white-space: pre;
     overflow: auto;
 
+}
+div.warn{
+    padding: 10px;
+    background-color: bisque;
+    margin: 6px;
 }
