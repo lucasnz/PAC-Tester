@@ -62,6 +62,7 @@ div.help{
     margin-bottom: auto;
     margin-right: 20px;
     text-align: right;
+    flex-grow: 2;
 }
 .flex{
     display: flex;
@@ -97,4 +98,8 @@ div.warn{
     padding: 10px;
     background-color: bisque;
     margin: 6px;
+}
+button{
+    margin-top: 6px;
+    margin-bottom: 6px;
 }
