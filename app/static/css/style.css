@@ -103,3 +103,9 @@ button{
     margin-top: 6px;
     margin-bottom: 6px;
 }
+textarea{
+    width: 100%;
+    box-sizing: border-box;
+    height: 15em;
+    display: block;
+}

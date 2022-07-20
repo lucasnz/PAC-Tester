@@ -23,8 +23,14 @@ async function evalPac() {
             mode: "javascript"
          });
     }
+    // normally the script will be in the codeMirror, but if it's disabled for some reason get it from the textarea.
+    var pac_script;
+    if (myCodeMirror)
+        pac_script = myCodeMirror.getValue();
+    else
+        pac_script = document.getElementById("pac_script").value;
     // check script for errors
-    JSHINT(myCodeMirror.getValue());
+    JSHINT(pac_script);
     for (i = 0; i < JSHINT.errors.length; ++i) {
       lintErr = JSHINT.errors[i];
       if (!lintErr)
@@ -33,10 +39,10 @@ async function evalPac() {
         appendLine('Error, line: ' + lintErr.line + ', ' + lintErr.reason, true);
     }
     // load script
-    var script = document.createElement('script');
-    script.innerHTML = myCodeMirror.getValue();
+    var html_script = document.createElement('script');
+    html_script.innerHTML = pac_script;
     try {
-        document.getElementById('pac_file').appendChild(script);
+        document.getElementById('pac_file').appendChild(html_script);
     }
     catch(e) {
         proxyStr = result = 'Error: ' + e.message;

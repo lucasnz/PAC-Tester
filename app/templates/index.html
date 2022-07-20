@@ -78,18 +78,21 @@
     <script src="{{ url_for('static', filename='js/ascii_pac_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/evalPac.js') }}"></script>
     <script>
-    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
-        lineNumbers: true,
-        tabindex: 0,
-        indentUnit: 4,
-        spellcheck: false,
-        autocorrect: false,
-        autocapitalize: false,
-        gutters: ["CodeMirror-lint-markers"],
-        lint: {options: {esversion: 2021}},
-        mode: "javascript"
-     });
-     window.JSHINT = JSHINT;
+    if (!(navigator.userAgent).includes("Googlebot"))
+    {
+        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
+            lineNumbers: true,
+            tabindex: 0,
+            indentUnit: 4,
+            spellcheck: false,
+            autocorrect: false,
+            autocapitalize: false,
+            gutters: ["CodeMirror-lint-markers"],
+            lint: {options: {esversion: 2021}},
+            mode: "javascript"
+        });
+        window.JSHINT = JSHINT;
+    }
     </script>
     <div id="pac_file" style="display: none;"></div>
     </body>
