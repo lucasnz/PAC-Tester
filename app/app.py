@@ -1,11 +1,12 @@
 import os
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, Response, render_template, request, send_from_directory
 app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
 app.jinja_env.trim_blocks = True
 import re
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/index.html', methods=['GET', 'POST'])
 def index():
     print('Method: %s, Path: %s' % (request.method, request.path))
     src_ip = None
@@ -55,6 +56,11 @@ def pacfunctions():
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.route('/sitemap.txt', methods=['GET'])
+def sitemap():
+    hostname = request.headers['Host']
+    return Response(render_template('sitemap.txt', hostname = hostname), mimetype='text/plain')
 
 @app.route('/', methods=['HEAD'])
 def head():
