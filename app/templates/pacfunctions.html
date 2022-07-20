@@ -61,7 +61,7 @@
                     <li>url (string) - The URL being accessed. The path and query components of https:// URLs are stripped.</li>
                     <li>host (string) - The hostname extracted from the URL. This is only for convenience; it is the same string as between :// and the first : or / after that. The port number is not included in this parameter. It can be extracted from the URL when necessary.</li>
                 </ul>
-                Note: The path and query components of https:// URLs are stripped. In Chrome (versions 52 to 73), you can disable this by setting PacHttpsUrlStrippingEnabled to false in policy or by launching with the --unsafe-pac-url command-line flag (in Chrome 74, only the flag works, and from 75 onward, there is no way to disable path-stripping; as of Chrome 81, path-stripping does not apply to HTTP URLs, but there is interest in changing this behavior to match HTTPS); in Firefox, the preference is network.proxy.autoconfig_url.include_path.
+                Note: The path and query components of https:// URLs are by stripped default in most modern browsers. In Chrome <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#Arguments-passed-to-FindProxyForURL_in-PAC-scripts">path stripping</a> can't be disabled. In Firefox, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file#parameters">path stripping</a> can be disabled with the preference network.proxy.autoconfig_url.include_path.
                 <div class="bold">Returns</div>
                 Returns a <i>string</i> with semicolon separated list of proxies to use.
                 The string can contain any number of the following building blocks, separated by a semicolon:
@@ -185,6 +185,7 @@ shExpMatch("https://google.com",                 "(*.|)google.com")  // returns 
 shExpMatch("https://www.google.com",             "(*.|)google.com")  // returns true</pre>
                 <p>Note: * (match any number of characters) and ? (match one character) are supported by all browsers.
                 Braces can be used to create a group. Groups are useful if you are using the or "|" expression - see example 5.</p>
+                <p>Note: The path and query components of https:// URLs are by stripped default in most modern browsers. This means example 1 is likely to only work for http.</p>
 <div id="exshExpMatch" style="display: none;">
 function FindProxyForURL(url, host)
 {
