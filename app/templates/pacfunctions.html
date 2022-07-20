@@ -2,13 +2,14 @@
 <head>
     <title>PAC Tester - WPAD / Proxy Auto-Config (PAC) Functions</title>
     <meta name="title" content="PAC Tester - WPAD / Proxy Auto-Config (PAC) Functions">
-    <meta name="description" content="PAC Tester enables you to validate Proxy Auto-Config (PAC) and Web Proxy Auto-Discovery (WPAD) scripts. It outputs the resulting proxy based on the specified: URL, Web Server IP, or Source IP.">
+    <meta name="description" content="Provides a list of Proxy PAC functions and describes the parameters they support. Gives examples of how to use the proxy PAC functions.">
     <meta name="keywords" content="PAC Tester, Proxy PAC, Proxy auto-config, Web Proxy Auto-Discovery, WPAD, PAC Parser, PAC Validator">
     <meta name="robots" content="index, follow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="{{ url_for('static', filename='js/pacfunctions.js') }}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <html>
@@ -20,7 +21,9 @@
         (HTTP, HTTPS, and FTP) go directly to the destination or are forwarded via a proxy server.
         The JavaScript function contained in the PAC file defines the function: FindProxyForUrl(url, host)</p>
         <p>Support for IPv6 is implemented in Extended functions in Internet Explorer but not widely supported by browsers yet.</p>
+        <p>To test your PAC script, try my <a href="/">PAC Tester</a>.</p>
         <H2>Functions</H2>
+        Proxy PAC files support the following functions:
         <ul>
             <li><a href="#FindProxyForUrl">FindProxyForUrl()</a></il>
             <li><a href="#isPlainHostName">isPlainHostName()</a></il>
@@ -58,18 +61,21 @@
                     <li>"SOCKS host:port" = The specified SOCKS server should be used.</li>
                 </ul>
                 <div class="bold">Examples</div>
-<pre>function FindProxyForURL(url, host)
+<pre id="exFindProxyForURL">function FindProxyForURL(url, host)
 {
+    // Send all plain DNS entries (e.g. intranet) and everything in mydomain.local DIRECT.
     if (isPlainHostName(host) ||
         dnsDomainIs(host, ".mydomain.local") ||
-        host == "mydomain.com")
+        host == "mydomain.local")
         {
             return "DIRECT";
         }
 
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
     return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
 }
 </pre>
+See this example in <a href="/" onmousedown="postPacTest(event, 'exFindProxyForURL');" onclick="postPacTest(event, 'exFindProxyForURL');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="isPlainHostName" class="function">
@@ -90,6 +96,20 @@
                 <div class="bold">Examples</div>
 <pre>isPlainHostName("www.example.com"); // returns false
 isPlainHostName("intranet");        // returns true</pre>
+<div id="exisPlainHostName" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // Send all plain DNS entries (e.g. intranet) DIRECT.
+    if (isPlainHostName(host))
+    {
+        return "DIRECT";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+See this example in <a href="/" onmousedown="postPacTest(event, 'exisPlainHostName');" onclick="postPacTest(event, 'exisPlainHostName');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="dnsDomainIs" class="function">
@@ -113,7 +133,22 @@ isPlainHostName("intranet");        // returns true</pre>
 <pre>dnsDomainIs("www.example.com", ".example.com"); // returns true
 dnsDomainIs("intranet", ".example.com");        // returns false
 dnsDomainIs("blahexample.com", "example.com");  // returns true</pre>
-                Note: The domain should be specified with a leading dot, for the third example to return false.
+                <p>Note: The domain should be specified with a leading dot, for the third example to return false.</p>
+<div id="exdnsDomainIs" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // Send everything in mydomain.local DIRECT.
+    if (dnsDomainIs(host, ".mydomain.local") ||
+        host == "mydomain.local")
+        {
+            return "DIRECT";
+        }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exdnsDomainIs');" onclick="postPacTest(event, 'exdnsDomainIs');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="shExpMatch" class="function">
@@ -138,8 +173,27 @@ shExpMatch("https://www.example.com/index.html", "*/path/*");        // returns 
 shExpMatch("https://www.example.com/index.html", "https://*");       // returns true
 shExpMatch("https://google.com",                 "(*.|)google.com")  // returns true
 shExpMatch("https://www.google.com",             "(*.|)google.com")  // returns true</pre>
-                Note: * (match any number of characters) and ? (match one character) are supported by all browsers.
-                Braces can be used to create a group. Groups are useful if you are using the or "|" expression - see example 5.
+                <p>Note: * (match any number of characters) and ? (match one character) are supported by all browsers.
+                Braces can be used to create a group. Groups are useful if you are using the or "|" expression - see example 5.</p>
+<div id="exshExpMatch" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // Send everything in mydomain.local DIRECT.
+    if (shExpMatch(host, "(*|).mydomain.local"))
+    {
+        return "DIRECT";
+    }
+    // Use a special proxy for https
+    if (shExpMatch(url, "https://*"))
+    {
+        return "PROXY proxyHTTPS.mydomain.local:8080";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exshExpMatch');" onclick="postPacTest(event, 'exshExpMatch');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="isInNet" class="function">
@@ -165,9 +219,28 @@ shExpMatch("https://www.google.com",             "(*.|)google.com")  // returns 
 <pre>isInNet("192.168.1.10", "192.168.1.0", "255.255.255.0"); // returns true
 isInNet("intranet",     "192.168.1.0", "255.255.255.0"); // returns true if dnsResolve("intranet") returns an IP address in the specified subnet.
 isInNet("8.8.8.8",      "192.168.1.0", "255.255.255.0"); // returns false
-(dnsDomainIs(host, ".mydomain.local") && isInNet(host, "192.168.10.0", "255.255.255.0");
+(dnsDomainIs(host, ".mydomain.local") && isInNet(host, "192.168.1.0", "255.255.255.0"));
 // only attempt the dnsResolve if host is in .mydomain.local</pre>
-                Note: If the host does not match the pattern for an IPv4 address, isInNet does a DNS lookup first.
+                <p>Note: If the host does not match the pattern for an IPv4 address, isInNet does a DNS lookup first.</p>
+<div id="exisInNet" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // If my IP Address is in the specified subnet, go "DIRECT"
+    if (isInNet(myIpAddress(), "192.168.1.0", "255.255.255.0"))
+    {
+        return "DIRECT";
+    }
+    // If the server is in mydomain.local and its IP Address is in the specified subet, use proxyA
+    if (dnsDomainIs(host, ".mydomain.local") && isInNet(host, "192.168.1.0", "255.255.255.0"))
+    {
+        return "PROXY proxyA.mydomain.local:8080";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exisInNet');" onclick="postPacTest(event, 'exisInNet');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="myIpAddress" class="function">
@@ -181,7 +254,21 @@ isInNet("8.8.8.8",      "192.168.1.0", "255.255.255.0"); // returns false
                 Returns a <i>string</i> with a single IPv4 address.
                 <div class="bold">Examples</div>
 <pre>myIpAddress(); // returns "192.168.1.100"</pre>
-                Note: On Linux myIpAddress() returns the same IP address as the address returned by nslookup localhost.
+                <p>Note: On Linux myIpAddress() returns the same IP address as the address returned by nslookup localhost.</p>
+<div id="exmyIpAddress" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // If my IP Address is in the specified subnet, go "DIRECT"
+    if (isInNet(myIpAddress(), "192.168.1.0", "255.255.255.0"))
+    {
+        return "DIRECT";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exmyIpAddress');" onclick="postPacTest(event, 'exmyIpAddress');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="dnsResolve" class="function">
@@ -201,6 +288,20 @@ isInNet("8.8.8.8",      "192.168.1.0", "255.255.255.0"); // returns false
 <pre>dnsResolve("dns.google"); // returns "8.8.8.8"
 (dnsDomainIs(host, ".mydomain.local") && dnsResolve(host) == "192.168.10.10");
 // only attempt the dnsResolve if host is in .mydomain.local</pre>
+<div id="exdnsResolve" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // If the server is in mydomain.local and its IP Address is 192.168.10.10, go DIRECT
+    if (dnsDomainIs(host, ".mydomain.local") && dnsResolve(host) == "192.168.10.10")
+    {
+        return "DIRECT";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exdnsResolve');" onclick="postPacTest(event, 'exdnsResolve');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="isResolvable" class="function">
@@ -225,6 +326,25 @@ isInNet("8.8.8.8",      "192.168.1.0", "255.255.255.0"); // returns false
 isResolvable("non.existent.domain"); // returns false
 (dnsDomainIs(host, ".mydomain.local") && isResolvable(host));
 // only attempt the isResolvable if host is in .mydomain.local</pre>
+<div id="exisResolvable" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    // If the domain is resolvable, use proxyA
+    if (!isResolvable(host)) //if not resolvable (note "!")
+    {
+        return "PROXY proxyA.mydomain.local:8080";
+    }
+    // If the server is in mydomain.local and it is resolvable, go DIRECT
+    if (dnsDomainIs(host, ".mydomain.local") && isResolvable(host))
+    {
+        return "DIRECT";
+    }
+
+    // Otherwise use the proxies. All traffic uses proxy1 unless it's down.
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exisResolvable');" onclick="postPacTest(event, 'exisResolvable');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="dnsDomainLevels" class="function">
@@ -242,6 +362,20 @@ isResolvable("non.existent.domain"); // returns false
 <pre>dnsDomainLevels("www");             // returns 0
 dnsDomainLevels("example.com");     // returns 1
 dnsDomainLevels("www.example.com"); // returns 2</pre>
+<div id="exdnsDomainLevels" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    if (dnsDomainLevels(host) < 2) //if there are less than two domain levels, go direct.
+    {
+        return "DIRECT";
+    }
+    // dnsDomainLevels("example.com");     // returns 1
+    // dnsDomainLevels("www.example.com"); // returns 2
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exdnsDomainLevels');" onclick="postPacTest(event, 'exdnsDomainLevels');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="localHostOrDomainIs" class="function">
@@ -268,7 +402,21 @@ localHostOrDomainIs("www"               , "www.example.com"); // returns true (h
 localHostOrDomainIs("www.google.com"    , "www.example.com"); // returns false (domain name mismatch)
 localHostOrDomainIs("mobile.example.com", "www.example.com"); // returns false (host name mismatch)
 localHostOrDomainIs("www.example"       , "www.example.com"); // returns true (host name match)</pre>
-            Note: Example 5 is likely not expected, but will return true as the logic matches the beginning of the strings.
+                <p>Note: Example 5 is likely not expected, but will return true as the logic matches the beginning of the strings.</p>
+<div id="exlocalHostOrDomainIs" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    if (localHostOrDomainIs(host, "www.mydomain.local"))
+    {
+        return "DIRECT";
+    }
+    // dnsDomainLevels("www.mydomain.local", "www.mydomain.local"); // returns "DIRECT"
+    // dnsDomainLevels("www", "www.mydomain.local");                // returns "DIRECT"
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exlocalHostOrDomainIs');" onclick="postPacTest(event, 'exlocalHostOrDomainIs');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="weekdayRange" class="function">
@@ -295,6 +443,24 @@ weekdayRange("MON", "FRI", "GMT"); // returns true Monday through Friday (GMT ti
 weekdayRange("SAT");               // returns true on Saturdays local time
 weekdayRange("SAT", "GMT");        // returns true on Saturdays GMT time
 weekdayRange("FRI", "MON");        // returns true Friday through Monday</pre>
+<div id="exweekdayRange" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    if (weekdayRange("MON", "FRI"))        // returns true Monday through Friday (local timezone)
+        return "PROXY weekday.mydomain.local:8080";
+    if (weekdayRange("MON", "FRI", "GMT")) // returns true Monday through Friday (GMT timezone)
+        return "PROXY weekdayGMT.mydomain.local:8080";
+    if (weekdayRange("SAT"))               // returns true on Saturdays local time
+        return "PROXY sat.mydomain.local:8080";
+    if (weekdayRange("SAT", "GMT"))        // returns true on Saturdays GMT time
+        return "PROXY satGMT.mydomain.local:8080";
+    if (weekdayRange("FRI", "MON"))        // returns true Friday through Monday
+        return "PROXY fri-mon.mydomain.local:8080";
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exweekdayRange');" onclick="postPacTest(event, 'exweekdayRange');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="dateRange" class="function">
@@ -320,7 +486,7 @@ weekdayRange("FRI", "MON");        // returns true Friday through Monday</pre>
                 If both values are specified, the result is true between those times, including bounds, but the bounds are ordered.
                 <div class="bold">Examples</div>
 <pre>dateRange(1);            // returns true on the first day of each month, local timezone
-dateRange(1, "GMT")      // returns true on the first day of each month, GMT timezone
+dateRange(1, "GMT");     // returns true on the first day of each month, GMT timezone
 dateRange(1, 15);        // returns true on the first half of each month
 dateRange(24, "DEC");    // returns true on 24th of December each year
 dateRange("JAN", "MAR"); // returns true on the first quarter of the year
@@ -336,6 +502,41 @@ dateRange("OCT", 1995, "MAR", 1996); // returns true from October 1995 until Mar
 dateRange(1995); // returns true during the entire year of 1995
 
 dateRange(1995, 1997); // returns true from beginning of year 1995 until the end of year 1997</pre>
+<div id="exdateRange" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    if (dateRange(1))            // returns true on the first day of each month, local timezone
+        return "PROXY 1st.mydomain.local:8080";
+    if (dateRange(1, "GMT"))      // returns true on the first day of each month, GMT timezone
+        return "PROXY 1stGMT.mydomain.local:8080";
+    if (dateRange(1, 15))        // returns true on the first half of each month
+        return "PROXY 1-15.mydomain.local:8080";
+    if (dateRange(24, "DEC"))    // returns true on 24th of December each year
+        return "PROXY 24dec.mydomain.local:8080";
+    if (dateRange("JAN", "MAR")) // returns true on the first quarter of the year
+        return "PROXY jan-mar.mydomain.local:8080";
+    
+    if (dateRange(1, "JUN", 15, "AUG")) // returns true from June 1st until August 15th, each year
+    // (including June 1st and August 15th)
+        return "PROXY 1jun-15aug.mydomain.local:8080";
+    
+    if (dateRange(1, "JUN", 1995, 15, "AUG", 1995)) // returns true from June 1st, 1995, until August 15th, same year
+        return "PROXY 1jun1995-15aug1995.mydomain.local:8080";
+    
+    if (dateRange("OCT", 1995, "MAR", 1996)) // returns true from October 1995 until March 1996
+    // (including the entire month of October 1995 and March 1996)
+        return "PROXY oct1995-mar1996.mydomain.local:8080";
+    
+    if (dateRange(1995)) // returns true during the entire year of 1995
+        return "PROXY 1995.mydomain.local:8080";
+    
+    if (dateRange(1995, 1997)) // returns true from beginning of year 1995 until the end of year 1997
+        return "PROXY 1995-1997.mydomain.local:8080";
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'exdateRange');" onclick="postPacTest(event, 'exdateRange');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="timeRange" class="function">
@@ -354,12 +555,30 @@ dateRange(1995, 1997); // returns true from beginning of year 1995 until the end
                 Boolean. If only a single value is specified (from each category: hour, minute, second), the function returns a true value only at times that match that specification.
                 If both values are specified, the result is true between those times, including bounds, but the bounds are ordered.
                 <div class="bold">Examples</div>
-<pre>timerange(12);                // returns true from noon to 1pm
-timerange(12, 13);            // returns true from noon to 1pm
-timerange(12, "GMT");         // returns true from noon to 1pm, in GMT timezone
-timerange(9, 17);             // returns true from 9am to 5pm
-timerange(8, 30, 17, 00);     // returns true from 8:30am to 5:00pm
-timerange(0, 0, 0, 0, 0, 30); // returns true between midnight and 30 seconds past midnight</pre>
+<pre>timeRange(12);                // returns true from noon to 1pm
+timeRange(12, 13);            // returns true from noon to 1:59pm
+timeRange(12, "GMT");         // returns true from noon to 1pm, in GMT timezone
+timeRange(9, 17);             // returns true from 9am to 5:59pm
+timeRange(8, 30, 17, 0);     // returns true from 8:30am to 5:00pm
+timeRange(0, 0, 0, 0, 0, 30); // returns true between midnight and 30 seconds past midnight</pre>
+<div id="extimeRange" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    if (timeRange(12))                // returns true from noon to 1pm
+        return "PROXY 12-13.mydomain.local:8080";
+    if (timeRange(12, "GMT"))         // returns true from noon to 1pm, in GMT timezone
+        return "PROXY 12-13GMT.mydomain.local:8080";
+    if (timeRange(8, 30, 17, 0))     // returns true from 8:30am to 5:00pm
+        return "PROXY 0830-1700.mydomain.local:8080";
+    if (timeRange(0, 0, 0, 0, 0, 30)) // returns true between midnight and 30 seconds past midnight
+        return "PROXY 00.mydomain.local:8080";
+    if (timeRange(0, 23)) // returns true all day
+        return "PROXY allday.mydomain.local:8080";
+
+    return "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+}
+</div>
+                See this example in <a href="/" onmousedown="postPacTest(event, 'extimeRange');" onclick="postPacTest(event, 'extimeRange');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
             </div>
         </div>
         <div id="alert" class="function">
@@ -375,6 +594,21 @@ timerange(0, 0, 0, 0, 0, 30); // returns true between midnight and 30 seconds pa
 <pre>dnsDomainLevels("www");             // returns 0
 dnsDomainLevels("example.com");     // returns 1
 dnsDomainLevels("www.example.com"); // returns 2</pre>
+<div id="exalert" style="display: none;">
+function FindProxyForURL(url, host)
+{
+    var proxy = "PROXY proxy1.mydomain.local:8080; proxy2.mydomain.local:8080";
+    alert(myIpAddress());
+    if (isPlainHostName(host))
+    {
+        proxy = "DIRECT";
+    }
+
+    alert(proxy);
+    return proxy;
+}
+</div>
+See this example in <a href="/" onmousedown="postPacTest(event, 'exalert');" onclick="postPacTest(event, 'exalert');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
                 Note: Logged messages do not work in all browsers but PAC Tester will logs these in the output windows. 
             </div>
         </div>
