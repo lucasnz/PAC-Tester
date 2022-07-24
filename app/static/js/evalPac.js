@@ -42,6 +42,7 @@ function evalPac() {
     // load script
     let html_script = document.createElement('script');
     html_script.innerHTML = pac_script;
+    console.log(pac_script);
     try {
         document.getElementById('pac_file').appendChild(html_script);
     }
@@ -131,10 +132,22 @@ function comparison(left, right, comparator) {
       return retVal;
 }
 function replaceComparators(pac_script) {
-    // chunks lines with comparators in them
-    let REGEX = new RegExp('(?<left>[^\|;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|;{}]*)', 'g');
     let matches = [];
-    while (null != (match = REGEX.exec(pac_script))) {
+    let temp_pac_script = pac_script;
+    // remove end chars from strings
+    let regexFindStr = /"(\\"|[^"])*"/g;
+    while (null != (match = regexFindStr.exec(pac_script))) {
+        //console.log(match);
+        strippedMatch = match[0].replace(/[\|;{}]/g, ' ');
+        if (match[0] != strippedMatch) {
+            console.log(strippedMatch);
+            temp_pac_script = temp_pac_script.splice(match.index, strippedMatch.length, strippedMatch);
+        }
+    }
+
+    // chunks with comparators in them
+    let REGEX = /(?<left>[^\|;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|;{}]*)/g;
+    while (null != (match = REGEX.exec(temp_pac_script))) {
         //console.log(match);
         matches.push(match);
     }
@@ -142,16 +155,19 @@ function replaceComparators(pac_script) {
     // search the array in reverse order so that we modify the string from end to start
     // modifying in this order means we don't need to handle changes in string length
     for (let i = matches.length - 1; i >= 0; i--) {
-        newComparator = parseMatch(matches[i]);
+        newComparator = parseMatch(matches[i].index, matches[i][0].length, pac_script);
         //console.log(newComparator);
-        let strReplace = pac_script.substr(matches[i].index + newComparator.start, newComparator.end).trim();
-        //console.log(strReplace);
-        //console.log(pac_script.replace(strReplace, newComparator.newComparator));
-        pac_script = pac_script.replace(strReplace, newComparator.newComparator);
+        pac_script = pac_script.splice(newComparator.replaceStart, newComparator.replaceLen, newComparator.text);
     }
     return pac_script;
 }
-function parseMatch(match) {
+function parseMatch(index, length, pac_script) {
+    // because we removed some characters, we are taking the orginal pac_script and parsing them
+    let compareStr = pac_script.substr(index, length)
+    //console.log(compareStr);
+    let REGEX = /(?<left>[\s\S]*)(?<comparator>==|!=|<|>)(?<right>[\s\S]*)/;
+    let match = REGEX.exec(compareStr)
+
     let left = match.groups.left;
     let numBracket = 0;
     let start = 0;
@@ -179,11 +195,17 @@ function parseMatch(match) {
     }
     //console.log("end: '" + end + "', right: '" + right.substring(0, end) + "'");
     right = right.substring(0, end).trim();
-    end = match.groups.left.length - start + match.groups.comparator.length + end;
     let comparator = match.groups.comparator.trim();
+    let replaceStart = index + start;
+    let replaceLen = match.groups.left.length - start + match.groups.comparator.length + end;
+    leftSpace = (/^\s*/.exec(match.groups.left))[0];
+    rightSpace = (/\s*$/.exec(match.groups.right))[0];
 
-    let newComparator = "comparison(" + left + ", " + right + ", '" + comparator + "')";
-    return {"start": start, "end": end, "newComparator": newComparator};
+    let newComparator = leftSpace + "comparison(" + left + ", " + right + ", '" + comparator + "')" + rightSpace;
+    return {"replaceStart": replaceStart, "replaceLen": replaceLen, "text": newComparator};
+}
+String.prototype.splice = function(start, length, replacement) {
+    return this.substr(0, start) + replacement + this.substr(start + length);
 }
 /*
  * Override Proxy PAC function to provide logging
