@@ -138,7 +138,7 @@ function replaceComparators(pac_script) {
     let regexFindStr = /"(\\"|[^"])*"/g;
     while (null != (match = regexFindStr.exec(pac_script))) {
         //console.log(match);
-        strippedMatch = match[0].replace(/[\|;{}]/g, ' ');
+        strippedMatch = match[0].replace(/[\|&;{}]/g, ' ');
         if (match[0] != strippedMatch) {
             console.log(strippedMatch);
             temp_pac_script = temp_pac_script.splice(match.index, strippedMatch.length, strippedMatch);
@@ -146,7 +146,7 @@ function replaceComparators(pac_script) {
     }
 
     // chunks with comparators in them
-    let REGEX = /(?<left>[^\|;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|;{}]*)/g;
+    let REGEX = /(?<left>[^\|&;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|&;{}]*)/g;
     while (null != (match = REGEX.exec(temp_pac_script))) {
         //console.log(match);
         matches.push(match);
