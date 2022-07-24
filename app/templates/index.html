@@ -78,7 +78,7 @@
     <script src="{{ url_for('static', filename='js/ascii_pac_utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/evalPac.js') }}"></script>
     <script>
-    if (!(navigator.userAgent).includes("Googlebot"))
+    if (!((navigator.userAgent).includes("Googlebot") || (navigator.userAgent).includes("Bingbot")))
     {
         var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("pac_script"), {
             lineNumbers: true,
