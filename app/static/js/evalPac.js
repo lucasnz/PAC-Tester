@@ -29,8 +29,9 @@ function evalPac() {
         pac_script = myCodeMirror.getValue();
     else
         pac_script = document.getElementById("pac_script").value;
+    if (document.getElementById("logComp").checked)
+        pac_script = replaceComparators(pac_script);
     // check script for errors
-    pac_script = replaceComparators(pac_script);
     JSHINT(pac_script);
     for (let i = 0; i < JSHINT.errors.length; ++i) {
       lintErr = JSHINT.errors[i];
@@ -133,6 +134,7 @@ function comparison(left, right, comparator) {
 }
 function replaceComparators(pac_script) {
     let matches = [];
+    pac_script = removeComments(pac_script);
     let temp_pac_script = pac_script;
     // remove end chars from strings
     let regexFindStr = /"(\\"|[^"])*"/g;
@@ -206,6 +208,11 @@ function parseMatch(index, length, pac_script) {
 }
 String.prototype.splice = function(start, length, replacement) {
     return this.substr(0, start) + replacement + this.substr(start + length);
+}
+function removeComments(pac_script) {
+    pac_script = pac_script.replace(/\/\/.*/g, '');
+    pac_script = pac_script.replace(/\/\*([\s\S]*?)\*\//g, '');
+    return pac_script;
 }
 /*
  * Override Proxy PAC function to provide logging
