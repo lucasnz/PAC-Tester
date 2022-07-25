@@ -210,9 +210,7 @@ String.prototype.splice = function(start, length, replacement) {
     return this.substr(0, start) + replacement + this.substr(start + length);
 }
 function removeComments(pac_script) {
-    pac_script = pac_script.replace(/\/\/.*/g, '');
-    pac_script = pac_script.replace(/\/\*([\s\S]*?)\*\//g, '');
-    return pac_script;
+    return pac_script.replace(/\/\*[\s\S]*\*\/|\s*\/\/.*$/gm, '');
 }
 /*
  * Override Proxy PAC function to provide logging
