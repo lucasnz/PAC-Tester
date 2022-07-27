@@ -1,4 +1,5 @@
 import os
+import socket
 from flask import Flask, Response, render_template, request, send_from_directory
 app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
@@ -57,10 +58,35 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+@app.route('/proxy.pac', methods=['GET'])
+def proxypac():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'proxy.pac', mimetype='application/x-ns-proxy-autoconfig')
+
 @app.route('/sitemap.txt', methods=['GET'])
 def sitemap():
     hostname = request.headers['Host']
     return Response(render_template('sitemap.txt', hostname = hostname), mimetype='text/plain')
+
+@app.route('/resolve', methods=['GET'])
+def resolve():
+    print('Method: %s, Path: %s' % (request.method, request.path))
+    name = request.args.get('name')
+    ips = list(
+        i        # raw socket structure
+            [4]  # internet protocol info
+            [0]  # address
+        for i in socket.getaddrinfo(name, None) # 2nd param port, required
+        if i[0] is socket.AddressFamily.AF_INET  # ipv4
+    )
+    response = '{"Question":[{"name":"%s"}],"Answer":[' % name
+    length = len(ips)
+    for i in range(length):
+        response = response + '{"name":"%s","data":"%s"}' % (name, ips[i])
+        if i < length-1 and length-1 > 0:
+            response = response + ','
+    response = response + ']}'
+    return Response(response, mimetype='application/json; charset=UTF-8')
 
 @app.route('/', methods=['HEAD'])
 def head():

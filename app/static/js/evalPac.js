@@ -238,7 +238,8 @@ function dnsResolve(host) {
                 ip = json.Answer[json.Answer.length-1].data;
             }
         }
-        oReq.open("get", 'https://8.8.8.8/resolve?name=' + host, false);
+        //oReq.open("get", 'https://8.8.8.8/resolve?name=' + host, false);
+        oReq.open("get", '/resolve?name=' + host, false);
         try {
             oReq.send();
         }
