@@ -72,20 +72,28 @@ def sitemap():
 def resolve():
     print('Method: %s, Path: %s' % (request.method, request.path))
     name = request.args.get('name')
-    ips = list(
-        i        # raw socket structure
-            [4]  # internet protocol info
-            [0]  # address
-        for i in socket.getaddrinfo(name, None) # 2nd param port, required
-        if i[0] is socket.AddressFamily.AF_INET  # ipv4
-    )
-    response = '{"Question":[{"name":"%s"}],"Answer":[' % name
+    ips = []
+    try:
+        ips = list(
+            i        # raw socket structure
+                [4]  # internet protocol info
+                [0]  # address
+                for i in socket.getaddrinfo(name, None) # 2nd param port, required
+                if i[0] is socket.AddressFamily.AF_INET  # ipv4
+        )
+    except:
+        pass
+    answer = ''
     length = len(ips)
-    for i in range(length):
-        response = response + '{"name":"%s","data":"%s"}' % (name, ips[i])
-        if i < length-1 and length-1 > 0:
-            response = response + ','
-    response = response + ']}'
+    if length > 0:
+        names = ''
+        for i in range(length):
+            names = names + '{"name":"%s","data":"%s"}' % (name, ips[i])
+            if i < length-1 and length-1 > 0: #don't put the coma on the last entry
+                names = names + ','
+        answer = ',"Answer":[%s]' % names
+
+    response = '{"Question":[{"name":"%s"}]%s}' % (name, answer)
     return Response(response, mimetype='application/json; charset=UTF-8')
 
 @app.route('/', methods=['HEAD'])
