@@ -9,7 +9,7 @@ function evalPac() {
     let err = false;
     let proxyStr = '';
     document.getElementById("pac_file").innerHTML = '';
-    document.getElementById("result").innerHTML = '';
+    document.getElementById("result").innerHTML = '&nbsp;';
     document.getElementById("result").classList.remove('err');
     // if output CodeMirror is already defined, then blank it otherwise create it...
     if (outCodeMirror) {
