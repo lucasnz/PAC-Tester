@@ -108,3 +108,9 @@ def resolve():
 def head():
         print('Method: %s, Path: %s' % (request.method, request.path))
         return True
+
+@app.after_request
+def add_header(response):
+    if 'Cache-Control' not in response.headers:
+        response.headers['Cache-Control'] = 'public, max-age=14400'
+    return response
