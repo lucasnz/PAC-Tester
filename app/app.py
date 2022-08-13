@@ -1,16 +1,39 @@
 import os
 import socket
+from urllib import response
 from flask import Flask, Response, render_template, request, send_from_directory
 app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
 app.jinja_env.trim_blocks = True
 import re
 
+@app.route('/ip', methods=['GET'])
+def ip():
+    print('Method: %s, Path: %s' % (request.method, request.path))
+    src_ip = request.remote_addr
+    for name, value in request.headers:
+        if name.lower() == 'x-forwarded-for':
+            # examples:
+            #   '163.116.194.20'
+            #   '163.116.194.20, 172.68.146.77:39550'
+            #   '163.116.194.20:27482'
+            #   '2104:440c:13a3:3100::10, 172.68.146.77:39550'
+            value = value.lstrip()
+            matches = re.search('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', value)
+            if matches:
+                src_ip = matches.group(0)
+            else:
+                src_ip = value.split(',')[0]
+
+    response = Response(src_ip)
+    response.headers['Access-Control-Allow-Origin'] = 'https://pactester.brdbnt.com'
+    response.headers['Cache-Control'] = 'no-store'
+    return response;
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index.html', methods=['GET', 'POST'])
 def index():
     print('Method: %s, Path: %s' % (request.method, request.path))
-    src_ip = None
     pac_script = """function FindProxyForURL(url, host)
 {
     if (isPlainHostName(host) ||
@@ -31,22 +54,7 @@ def index():
     if request.method == 'POST':
         pac_script = (request.form['pac_script']).replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
 
-    src_ip = request.remote_addr
-    for name, value in request.headers:
-        if name.lower() == 'x-forwarded-for':
-            # examples:
-            #   '163.116.194.20'
-            #   '163.116.194.20, 172.68.146.77:39550'
-            #   '163.116.194.20:27482'
-            #   '2104:440c:13a3:3100::10, 172.68.146.77:39550'
-            value = value.lstrip()
-            matches = re.search('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', value)
-            if matches:
-                src_ip = matches.group(0)
-            else:
-                src_ip = value.split(',')[0]
-
-    return render_template('index.html', src_ip = src_ip, pac_script = pac_script, url = url)
+    return render_template('index.html', pac_script = pac_script, url = url)
 
 @app.route('/pacfunctions.html', methods=['GET'])
 def pacfunctions():
@@ -58,11 +66,11 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-@app.route('/proxy.pac', methods=['GET'])
-def proxypac():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'proxy.pac', mimetype='application/x-ns-proxy-autoconfig')
-
+# @app.route('/proxy.pac', methods=['GET'])
+# def proxypac():
+#     return send_from_directory(os.path.join(app.root_path, 'static'),
+#                                'proxy.pac', mimetype='application/x-ns-proxy-autoconfig')
+#
 @app.route('/sitemap.txt', methods=['GET'])
 def sitemap():
     hostname = request.headers['Host']

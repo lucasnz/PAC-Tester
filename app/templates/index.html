@@ -53,7 +53,7 @@
             </div>
             <div class="col">
                 <H2>Source IP Address</H2>
-                <input class="wide" id="src_ip" name="src_ip" type="text" value="{{src_ip}}">
+                <input class="wide" id="src_ip" name="src_ip" type="text" value="">
             </div>
             <div class="col">
                 <H2>Override dnsResolve (Optional)</H2>
@@ -93,6 +93,22 @@
             mode: "javascript"
         });
         window.JSHINT = JSHINT;
+    }
+    let oReq = new XMLHttpRequest();
+    oReq.onload = function () {
+        let ipv4_regex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/gm;   
+        if (ipv4_regex.test(this.responseText))
+            document.getElementById("src_ip").value = this.responseText;
+    }
+    let url = '/ip';
+    if (window.location.hostname == 'pactester.brdbnt.com')
+        url = 'https://pactester.azurewebsites.net/ip';
+    oReq.open("get", url);
+    try {
+        oReq.send();
+    }
+    catch(e) {
+        appendLine('Error: IP Address lookup failed: ' + e.message, true);
     }
     </script>
     <div id="pac_file" style="display: none;"></div>

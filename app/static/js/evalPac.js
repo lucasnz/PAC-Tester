@@ -228,15 +228,11 @@ function dnsResolve(host) {
     let ip = (document.getElementById("dst_ip").value).trim();
     if (ip == '') {
         ip = null;
-        let oReq = new XMLHttpRequest();
         let json;
+        let oReq = new XMLHttpRequest();
         oReq.onload = function () {
             json = JSON.parse(this.responseText);
             console.log(json);
-            if (json.Answer) {
-                //console.log(json.Answer[json.Answer.length-1].data);
-                ip = json.Answer[json.Answer.length-1].data;
-            }
         }
         //oReq.open("get", 'https://8.8.8.8/resolve?name=' + host, false);
         oReq.open("get", '/resolve?name=' + host, false);
