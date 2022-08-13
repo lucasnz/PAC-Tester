@@ -1,6 +1,5 @@
 import os
 import socket
-from urllib import response
 from flask import Flask, Response, render_template, request, send_from_directory
 app = Flask(__name__)
 app.jinja_env.lstrip_blocks = True
@@ -28,7 +27,7 @@ def ip():
     response = Response(src_ip)
     response.headers['Access-Control-Allow-Origin'] = 'https://pactester.brdbnt.com'
     response.headers['Cache-Control'] = 'no-store'
-    return response;
+    return response
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index.html', methods=['GET', 'POST'])
