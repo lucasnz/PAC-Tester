@@ -58,10 +58,10 @@
                 the left-most setting will be used, until the browser fails to establish a connection to the proxy. In that case, the next value will be used, etc.
                 <div class="bold">Parameters</div>
                 <ul>
-                    <li>url (string) - The URL being accessed. The path and query components of https:// URLs are stripped.</li>
-                    <li>host (string) - The hostname extracted from the URL. This is only for convenience; it is the same string as between :// and the first : or / after that. The port number is not included in this parameter. It can be extracted from the URL when necessary.</li>
+                    <li>url (string) - The full URL being accessed e.g. <a href="">https://example.com/index.html</a>. The path and query components of HTTPS URLs are stripped, thus <a href="">https://example.com/index.html</a> becomes <a href="">https://example.com/</a>.</li>
+                    <li>host (string) - The hostname extracted from the URL. It is the same string as between :// and the first : or / after that. Thus host for <a href="">https://example.com/index.html</a> is: example.com. The port number is not included in this parameter. It can be extracted from the url string when necessary.</li>
                 </ul>
-                Note: The path and query components of https:// URLs are by stripped default in most modern browsers. In Chrome <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#Arguments-passed-to-FindProxyForURL_in-PAC-scripts">path stripping</a> can't be disabled. In Firefox, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file#parameters">path stripping</a> can be disabled with the preference network.proxy.autoconfig_url.include_path.
+                Note: The path and query components of HTTPS URLs are by stripped default in most modern browsers. In Chrome <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#Arguments-passed-to-FindProxyForURL_in-PAC-scripts">path stripping</a> can't be disabled. In Firefox, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file#parameters">path stripping</a> can be disabled with the preference network.proxy.autoconfig_url.include_path.
                 <div class="bold">Returns</div>
                 Returns a <i>string</i> with semicolon separated list of proxies to use.
                 The string can contain any number of the following building blocks, separated by a semicolon:
@@ -620,7 +620,7 @@ function FindProxyForURL(url, host)
 }
 </div>
 See this example in <a href="/" onmousedown="postPacTest(event, 'exalert');" onclick="postPacTest(event, 'exalert');" oncontextmenu="window.event.returnValue = false;">PAC Tester</a>.
-                Note: Logged messages do not work in all browsers but PAC Tester will logs these in the output windows. 
+                Note: Logged messages do not work in all browsers but PAC Tester will log alerts in the output box. 
             </div>
         </div>
     </div>
