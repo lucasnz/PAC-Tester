@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '22 13 * * Mon'
   push:
-    branches: [ "master" ]
+    branches: [ "latest" ]
 
 env:
   # Use docker.io for Docker Hub if empty

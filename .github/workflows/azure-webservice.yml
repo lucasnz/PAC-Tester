@@ -14,7 +14,7 @@ on:
     - cron: '22 13 * * Mon'
   push:
     branches:
-      - master
+      - latest
   workflow_dispatch:
 
 jobs:
