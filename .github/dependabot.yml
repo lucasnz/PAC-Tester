@@ -4,3 +4,8 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/app" # Specify the directory containing the requirements.txt file
+    file: "requirements.txt" # Specify the dependency file
+    schedule:
+      interval: "weekly"
