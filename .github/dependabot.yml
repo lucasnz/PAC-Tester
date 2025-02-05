@@ -6,6 +6,9 @@ updates:
       interval: "weekly"
   - package-ecosystem: "pip"
     directory: "/" # Specify the directory containing the requirements.txt file
-    #file: "requirements.txt" # Specify the dependency file
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/" # Specify the directory containing the Dockerfile
     schedule:
       interval: "weekly"
