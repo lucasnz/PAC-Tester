@@ -18,7 +18,7 @@ def ip():
             #   '163.116.194.20:27482'
             #   '2104:440c:13a3:3100::10, 172.68.146.77:39550'
             value = value.lstrip()
-            matches = re.search('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', value)
+            matches = re.search(r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}', value)
             if matches:
                 src_ip = matches.group(0)
             else:
