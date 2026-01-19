@@ -34,14 +34,14 @@ function evalPac() {
     // check script for errors
     JSHINT(pac_script);
     for (let i = 0; i < JSHINT.errors.length; ++i) {
-      lintErr = JSHINT.errors[i];
+      const lintErr = JSHINT.errors[i];
       if (!lintErr)
         console.log(lintErr);
       else
         appendLine('Error, line: ' + lintErr.line + ', ' + lintErr.reason, true);
     }
     // load script
-    let html_script = document.createElement('script');
+    const html_script = document.createElement('script');
     html_script.innerHTML = pac_script;
     console.log(pac_script);
     try {
@@ -57,7 +57,7 @@ function evalPac() {
     }
     if (!err) {
         // define host variable
-        let {host, url} = normalizeHostUrl(document.getElementById("url").value);
+        const {host, url} = normalizeHostUrl(document.getElementById("url").value);
         if (host == null) {
             result = 'URLError: "' + url + '". URL must contain protocol prefix, e.g. https://';
             proxyStr = result;
@@ -88,8 +88,8 @@ function evalPac() {
 function normalizeHostUrl(url) {
     // Browsers always have a lower case host name
     let host = null;
-    let _URL_REGEX = new RegExp('(^[^:]*:\/\/)([^\/:]+)(.*)')
-    let match = _URL_REGEX.exec(url);
+    const _URL_REGEX = new RegExp('(^[^:]*:\/\/)([^\/:]+)(.*)')
+    const match = _URL_REGEX.exec(url);
     if (match != null && match.length == 4) {
         host = match[2].toLowerCase();
         url = match[1] + host + match[3];
@@ -104,8 +104,8 @@ function updateResult(text, err) {
 }
 function appendLine(line, err) {
     //console.trace();
-    let lineCount = outCodeMirror.lineCount();
-    let pos = { // create a new object to avoid mutation of the original selection
+    const lineCount = outCodeMirror.lineCount();
+    const pos = { // create a new object to avoid mutation of the original selection
         line: lineCount,
         ch: lineCount.length - 1 // set the character position to the end of the line
     }
@@ -133,14 +133,14 @@ function comparison(left, right, comparator) {
       return retVal;
 }
 function replaceComparators(pac_script) {
-    let matches = [];
+    const matches = [];
     pac_script = removeComments(pac_script);
     let temp_pac_script = pac_script;
     // remove end chars from strings
-    let regexFindStr = /"(\\"|[^"])*"/g;
+    const regexFindStr = /"(\\"|[^"])*"/g;
     while (null != (match = regexFindStr.exec(pac_script))) {
         //console.log(match);
-        strippedMatch = match[0].replace(/[\|&;{}]/g, ' ');
+        const strippedMatch = match[0].replace(/[\|&;{}]/g, ' ');
         if (match[0] != strippedMatch) {
             console.log(strippedMatch);
             temp_pac_script = temp_pac_script.splice(match.index, strippedMatch.length, strippedMatch);
@@ -148,7 +148,7 @@ function replaceComparators(pac_script) {
     }
 
     // chunks with comparators in them
-    let REGEX = /(?<left>[^\|&;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|&;{}]*)/g;
+    const REGEX = /(?<left>[^\|&;{}]*)(?<comparator>==|!=|<|>)(?<right>[^\|&;{}]*)/g;
     while (null != (match = REGEX.exec(temp_pac_script))) {
         //console.log(match);
         matches.push(match);
@@ -157,7 +157,7 @@ function replaceComparators(pac_script) {
     // search the array in reverse order so that we modify the string from end to start
     // modifying in this order means we don't need to handle changes in string length
     for (let i = matches.length - 1; i >= 0; i--) {
-        newComparator = parseMatch(matches[i].index, matches[i][0].length, pac_script);
+        const newComparator = parseMatch(matches[i].index, matches[i][0].length, pac_script);
         //console.log(newComparator);
         pac_script = pac_script.splice(newComparator.replaceStart, newComparator.replaceLen, newComparator.text);
     }
@@ -165,10 +165,10 @@ function replaceComparators(pac_script) {
 }
 function parseMatch(index, length, pac_script) {
     // because we removed some characters, we are taking the orginal pac_script and parsing them
-    let compareStr = pac_script.substr(index, length)
+    const compareStr = pac_script.substr(index, length)
     //console.log(compareStr);
-    let REGEX = /(?<left>[\s\S]*)(?<comparator>==|!=|<|>)(?<right>[\s\S]*)/;
-    let match = REGEX.exec(compareStr)
+    const REGEX = /(?<left>[\s\S]*)(?<comparator>==|!=|<|>)(?<right>[\s\S]*)/;
+    const match = REGEX.exec(compareStr)
 
     let left = match.groups.left;
     let numBracket = 0;
@@ -197,13 +197,13 @@ function parseMatch(index, length, pac_script) {
     }
     //console.log("end: '" + end + "', right: '" + right.substring(0, end) + "'");
     right = right.substring(0, end).trim();
-    let comparator = match.groups.comparator.trim();
-    let replaceStart = index + start;
-    let replaceLen = match.groups.left.length - start + match.groups.comparator.length + end;
-    leftSpace = (/^\s*/.exec(match.groups.left))[0];
-    rightSpace = (/\s*$/.exec(match.groups.right))[0];
+    const comparator = match.groups.comparator.trim();
+    const replaceStart = index + start;
+    const replaceLen = match.groups.left.length - start + match.groups.comparator.length + end;
+    const leftSpace = (/^\s*/.exec(match.groups.left))[0];
+    const rightSpace = (/\s*$/.exec(match.groups.right))[0];
 
-    let newComparator = leftSpace + "comparison(" + left + ", " + right + ", '" + comparator + "')" + rightSpace;
+    const newComparator = leftSpace + "comparison(" + left + ", " + right + ", '" + comparator + "')" + rightSpace;
     return {"replaceStart": replaceStart, "replaceLen": replaceLen, "text": newComparator};
 }
 String.prototype.splice = function(start, length, replacement) {
@@ -216,7 +216,7 @@ function removeComments(pac_script) {
  * Override Proxy PAC function to provide logging
  */
 function myIpAddress(){
-    let ret = document.getElementById("src_ip").value;
+    const ret = document.getElementById("src_ip").value;
     appendLine('myIpAddress() => "' + ret + '";');
     return ret;
 }
@@ -229,7 +229,7 @@ function dnsResolve(host) {
     if (ip == '') {
         ip = null;
         let json;
-        let oReq = new XMLHttpRequest();
+        const oReq = new XMLHttpRequest();
         oReq.onload = function () {
             json = JSON.parse(this.responseText);
             console.log(json);
@@ -263,7 +263,7 @@ var alert = function(str) {
 }
 
 function functionLogging(orginalFunction) {
-    newFunction = function(...args) {
+    const newFunction = function(...args) {
         let logStr = orginalFunction.name + '('
         for(let i = 0; i < args.length ;i++) {
             // if not the last item
@@ -273,7 +273,7 @@ function functionLogging(orginalFunction) {
                 logStr = logStr + '"' + args[i] + '")';
         };
         //console.log(logStr);
-        let ret = orginalFunction(...args);
+        const ret = orginalFunction(...args);
         appendLine(logStr + ' => ' + ret + ';');
         return ret;
     };
